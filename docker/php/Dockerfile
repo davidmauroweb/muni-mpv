@@ -21,4 +21,12 @@ RUN chmod +x /usr/local/bin/inicio.sh
 
 WORKDIR /var/www
 
+RUN mkdir -p /var/www/storage/framework/views \
+             /var/www/storage/framework/cache \
+             /var/www/storage/framework/sessions \
+             /var/www/bootstrap/cache
+
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+RUN chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+
 ENTRYPOINT ["inicio.sh"]

@@ -11,7 +11,16 @@ El backend se desarrolla utilizando Laravel por su robustez y escalabilidad publ
 
 ## Correr el proyecto
 El proyecto se descarga desde GIT con :
+
 `git clone https://github.com/davidmauroweb/muni-mpv`
+
 `cd muni-mpv`
+
+`cp backend/.env.example backend/.env`
+
 `docker compose up`
+
 Al iniciar los contenedores éstos realizan automaticamente las migraciones con los seeders de prueba (backend/database/seeders/DatabaseDeeder.php)
+
+## Permisos y roles:
+Los roles están filtrado por ruta.  En (backend/routes/api.php)

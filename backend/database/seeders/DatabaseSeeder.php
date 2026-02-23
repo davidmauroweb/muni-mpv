@@ -51,6 +51,7 @@ class DatabaseSeeder extends Seeder
             'usuario_creador_id' => 1,
             'usuario_asignado_id' => 1,
             'estado' => 'ASIGNADO',
+            'descripcion' => 'desc',
             'fecha' => '2026/02/21',
             'motivo' => 'Motivo Prueba',
             'resolucion' => 'Resolucion prueba',

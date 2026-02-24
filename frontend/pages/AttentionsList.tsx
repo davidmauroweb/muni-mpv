@@ -51,7 +51,11 @@ export const AttentionsList: React.FC = () => {
   const openDetailModal = (atencion: Atencion) => {
     setSelectedAtencion(atencion);
     setDispenseText(atencion.resolucion || '');
-    setIsModalOpen(true);
+    if (user.id === atencion.usuario_asignado_id || user.rol === 'SUPERVISOR') {
+        setIsModalOpen(true);
+      }else{
+        alert('No posee permisos para editar la Atención')
+      }
   };
 
   const handleSaveResolution = async () => {

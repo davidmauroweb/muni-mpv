@@ -27,6 +27,6 @@ RUN mkdir -p /var/www/storage/framework/views \
              /var/www/bootstrap/cache
 
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
-RUN chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+RUN chmod a+w /var/www/storage /var/www/bootstrap/cache
 
 ENTRYPOINT ["inicio.sh"]

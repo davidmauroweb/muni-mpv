@@ -19,15 +19,17 @@ class superv
 
         if (!$user) {
             return response()->json([
+                'success' => false,
                 'message' => 'No autenticado'
             ], 401);
         }
     
-        if ($user->rol == 'SUPERVIDOR') {
+        if ($user->rol == 'SUPERVISOR') {
             return $next($request);
         }
         
         return response()->json([
+            'success' => false,
             'message' => 'Acceso no autorizado'
         ], 403);
         

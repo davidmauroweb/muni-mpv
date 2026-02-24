@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{atencion};
+use App\Models\atencion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -13,7 +13,9 @@ class AtencionController extends Controller
      */
     public function index()
     {
-        return atencion::join('solicitantes', 'solicitantes.id', 'atencions.solicitante_id')->select('solicitantes.nombre_apellido AS solicitante_nombre','solicitantes.dni AS solicitante_dni','atencions.*')->get();
+        return atencion::join('solicitantes', 'solicitantes.id', 'atencions.solicitante_id')
+            ->leftjoin('users','atencions.usuario_asignado_id','users.id')
+            ->select('solicitantes.nombre_apellido AS solicitante_nombre','solicitantes.dni AS solicitante_dni','atencions.*','users.apellido AS personal_nombre')->get();
     }
 
     /**
@@ -33,11 +35,11 @@ class AtencionController extends Controller
         $nuevo->solicitante_id = $request->solicitante_id;
         $nuevo->usuario_creador_id = auth()->user()->id;
         $nuevo->usuario_asignado_id = $request->asignada_a="" ? null : $request->asignada_a;
-        $nuevo->estado = $request->filled('asignada_a') ? 'ASIGNADO' : 'PENDIENTE';
+        $nuevo->estado = $request->filled('asignada_a') ? 'en_atencion' : 'registrado';
         $nuevo->fecha = Carbon::now()->format('Y-m-d');
         $nuevo->motivo = $request->tipo_tramite;
         $nuevo->descripcion = $request->descripcion;
-        $nuevo->resolucion = "";
+        $nuevo->resolucion = null;
         $nuevo->save();
         return response()->json([
             'success' => true,
@@ -68,7 +70,7 @@ class AtencionController extends Controller
     public function update(Request $request, atencion $atencion)
     {
         $update = atencion::find($atencion->id);
-        $update->estado = $request->estado;
+        $update->estado = 'atendido';
         $update->resolucion = $request->atencion_dispensada;
         $update->save();
         // La fecha se calcula automáticamente con laravel al modificar un campo modifica el campo updated_at

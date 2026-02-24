@@ -41,7 +41,7 @@ export const AttentionsList: React.FC = () => {
   }, [searchText, statusFilter, atenciones]);
 
   const handleStartAttention = (id: string) => {
-    StorageService.updateAtencion(id, { 
+    StorageService.updateAtencion({ 
       estado: EstadoAtencion.EN_ATENCION,
       fecha_inicio_atencion: new Date().toISOString()
     });
@@ -70,6 +70,7 @@ export const AttentionsList: React.FC = () => {
     const data = await StorageService.getAtenciones();
     data.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     setAtenciones(data);
+    console.log(data);
   };
 
   const canEditResolution = (atencion: Atencion) => {

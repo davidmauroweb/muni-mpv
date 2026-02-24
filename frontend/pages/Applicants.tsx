@@ -58,12 +58,23 @@ export const Applicants: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm('¿Está seguro de eliminar este solicitante? Esta acción no se puede deshacer.')) {
-        StorageService.delete(id);
-        loadSolicitantes();
+        try {
+            const response = await StorageService.delete(id);
+
+            if (response.success) {
+                alert(response.message);
+                await loadSolicitantes();
+            } else {
+                alert(`Error: ${response.message}`);
+            }
+        } catch (error) {
+            console.error("Error al eliminar:", error);
+            alert("No se pudo eliminar el solicitante debido a un error de red o del servidor.");
+        }
     }
-  };
+};
 
   const viewHistory = (id: string, name: string) => {
     const all = StorageService.getAtenciones();

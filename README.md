@@ -1,5 +1,5 @@
 # muni-mpv
-## Argquitectura
+## Arquitectura
 La arquitectura utilizada esta basada en contenedores donde se ejecutan los distintos servicios:
 * DB: Utiliza Postgres 16 para la persistencia de datos.
 * Backend: Donde se encuentra la lógica desarrollada en laravel que atiende las solicitudes de nginx para resolverlas con el acceso a la base de datos y validación de roles de utuarios.
@@ -24,3 +24,11 @@ Al iniciar los contenedores éstos realizan automaticamente las migraciones con 
 
 ## Permisos y roles:
 Los roles están filtrado por ruta.  En (backend/routes/api.php)
+
+## Ajustes
+En frontend/services/api.ts colocar el dominio en baseURL: "http://localhost:8000/api"
+En frontend/vite.config.ts colocar agregar debajo de host:0.0.0.0
+        hmr: {
+          host: 'dominio.com',
+          protocol: 'wss', // Para utilizar Https
+        }

@@ -20,15 +20,15 @@ El proyecto se descarga desde GIT con :
 
 `docker compose up`
 
-Al iniciar los contenedores éstos realizan automaticamente las migraciones con los seeders de prueba (backend/database/seeders/DatabaseDeeder.php)
+Al iniciar los contenedores éstos realizan automaticamente las migraciones con los seeders de prueba (backend/database/seeders/DatabaseSeeder.php)
 
 ## Permisos y roles:
 Los roles están filtrado por ruta.  En (backend/routes/api.php)
 
 ## Ajustes
-En frontend/services/api.ts colocar el dominio en baseURL: "http://localhost:8000/api"
-En frontend/vite.config.ts colocar agregar debajo de host:0.0.0.0
-        hmr: {
-          host: 'dominio.com',
-          protocol: 'wss', // Para utilizar Https
+En frontend/services/api.ts colocar el dominio en baseURL: "http://localhost:8000/api"<br>
+En frontend/vite.config.ts colocar agregar debajo de host:0.0.0.0<br>
+        hmr: {<br>
+          host: 'dominio.com',<br>
+          protocol: 'wss', // Para utilizar Https<br>
         }

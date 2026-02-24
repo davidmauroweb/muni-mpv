@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\atencion;
+use App\Models\{atencion,User};
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -41,10 +41,23 @@ class AtencionController extends Controller
         $nuevo->descripcion = $request->descripcion;
         $nuevo->resolucion = null;
         $nuevo->save();
+        $acargo = User::where('id', $nuevo->usuario_asignado_id)->select('nombre','apellido','rol')->first();
+        $datos = [
+            'id' => $nuevo->id,
+            'fecha_creacion' => $nuevo->created_at,
+            'solicitante_nombre' => $request->solicitante_nombre,
+            'solicitante_dni' => $request->solicitante_dni,
+            'solicitante_domicilio' => $request->solicitante_domicilio,
+            'solicitante_telefono' => $request->solicitante_telefono,
+            'motivo' => $request->tipo_tramite,
+            'atencion_dispensada' => $request->atencion_dispensada,
+            'personal_nombre' => $acargo->nombre." ".$acargo->apellido,
+            'personal_cargo' => $acargo->rol,
+        ];
         return response()->json([
             'success' => true,
             'message' => 'Atención Creada',
-            'data' => $nuevo
+            'data' => $datos
         ], 200);
     }
 

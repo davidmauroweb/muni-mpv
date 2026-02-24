@@ -1,6 +1,6 @@
 import { Atencion } from "../types";
 
-export const printVoucher = (atencion: Atencion) => {
+export const printVoucher = async (atencion: Atencion): Promise<void> => {
   const printWindow = window.open('', '_blank');
   if (!printWindow) {
     alert('Por favor habilite las ventanas emergentes para imprimir.');
@@ -11,7 +11,7 @@ export const printVoucher = (atencion: Atencion) => {
     <!DOCTYPE html>
     <html>
       <head>
-        <title>Comprobante de Atención - ${atencion.numero_atencion}</title>
+        <title>Comprobante de Atención - ${atencion.id}</title>
         <style>
           body { font-family: 'Times New Roman', serif; padding: 40px; max-width: 800px; margin: 0 auto; }
           .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px; }
@@ -39,8 +39,8 @@ export const printVoucher = (atencion: Atencion) => {
           <div class="logo-text">Municipalidad de Azul</div>
           <div class="subtitle">Secretaría de Desarrollo de la Comunidad</div>
           <div class="title">MESA DE ENTRADAS</div>
-          <div class="voucher-no">COMPROBANTE N° ${atencion.numero_atencion}</div>
-          <div style="margin-top: 10px;">Fecha: ${new Date(atencion.created_date).toLocaleString('es-AR')}</div>
+          <div class="voucher-no">COMPROBANTE N° ${atencion.id}</div>
+          <div style="margin-top: 10px;">Fecha: ${new Date(atencion.fecha_creacion).toLocaleString('es-AR')}</div>
         </div>
 
         <div class="row">
@@ -101,4 +101,5 @@ export const printVoucher = (atencion: Atencion) => {
 
   printWindow.document.write(html);
   printWindow.document.close();
+  return Promise.resolve();
 };

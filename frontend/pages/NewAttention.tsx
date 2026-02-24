@@ -72,6 +72,10 @@ const handleSubmit = async (e: React.FormEvent) => {
 
         const res = await fakeAtencionService.create({
             solicitante_id: selectedSolicitante.id,
+            solicitante_nombre: selectedSolicitante.nombre_apellido,
+            solicitante_dni : selectedSolicitante.dni,
+            solicitante_telefono : selectedSolicitante.telefono,
+            solicitante_domicilio : selectedSolicitante.domicilio,
             tipo_tramite: tipoTramite,
             descripcion: descripcion,
             asignada_a: selectedPersonalId,

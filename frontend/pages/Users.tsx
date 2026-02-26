@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { fakeUserService } from '../services/fakeUserService';
-import { User, UserRole } from '../types';
+import { User, UserArea, UserRole } from '../types';
 import { UserPlus, Edit3, Trash2, X, Save, Shield, Key } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -34,7 +34,6 @@ export const Users: React.FC = () => {
     try {
       const user: User = {
       ...formData as User,
-      //id: editingId || crypto.randomUUID(),
       id: editingId,
       password: formData.password || (editingId ? (users.find(u => u.id === editingId)?.password) : '123'),
       debe_cambiar_password: !editingId,
@@ -143,7 +142,9 @@ export const Users: React.FC = () => {
                         </div>
                         <div className="col-span-1">
                             <label className="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-wider">Área</label>
-                            <input required className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" value={formData.area} onChange={e => setFormData({...formData, area: e.target.value})}/>
+                            <select className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" value={formData.area} onChange={e => setFormData({...formData, area: e.target.value as UserArea})}>
+                                {Object.values(UserArea).map(r => <option key={r} value={r}>{r}</option>)}
+                            </select>
                         </div>
                         <div className="col-span-2">
                             <label className="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-wider">Contraseña {editingId && '(Dejar en blanco para no cambiar)'}</label>

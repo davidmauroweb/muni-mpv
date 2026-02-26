@@ -6,6 +6,12 @@ export enum UserRole {
   PERSONAL = 'PERSONAL'
 }
 
+export enum UserArea {
+  SOCIAL = 'Social',
+  GESTION = 'Gestión',
+  ADMINISTRACION = 'Administración'
+}
+
 export enum EstadoAtencion {
   PENDIENTE = 'pendiente',
   ASIGNADO = 'asignado',

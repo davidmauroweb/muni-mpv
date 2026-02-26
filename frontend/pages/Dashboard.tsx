@@ -116,10 +116,10 @@ export const Dashboard: React.FC = () => {
       {/* Primary Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: 'Atenciones Hoy', value: stats.hoy, icon: TrendingUp, color: 'text-blue-600', bg: 'bg-blue-50', trend: '+12%' },
-          { label: 'En Espera', value: stats.registradas, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-50', trend: '-5%' },
+          { label: 'Atenciones Hoy', value: stats.hoy, icon: TrendingUp, color: 'text-blue-600', bg: 'bg-blue-50', trend: Math.round((stats.hoy / stats.hoy)*100)+'%' },
+          { label: 'En Espera', value: stats.registradas, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-50', trend: Math.round((stats.registradas / stats.hoy)*100)+'%' },
           { label: 'En Atención', value: stats.enAtencion, icon: UsersIcon, color: 'text-indigo-500', bg: 'bg-indigo-50', trend: 'Estable' },
-          { label: 'Tiempo Medio (TMR)', value: `${stats.tmr_minutos}'`, icon: Clock, color: 'text-green-600', bg: 'bg-green-50', trend: '-2 min' },
+          { label: 'Tiempo Medio (TMR)', value: `${stats.tmr_minutos}'`, icon: Clock, color: 'text-green-600', bg: 'bg-green-50', trend: stats.tmr_minutos },
         ].map((item, i) => (
           <div key={i} className="bg-white p-6 rounded-[2rem] shadow-xl border border-slate-100 relative overflow-hidden group hover:scale-[1.02] transition-all">
             <div className={`absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity`}>

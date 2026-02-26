@@ -73,7 +73,7 @@ export const printVoucher = async (atencion: Atencion): Promise<void> => {
 
         <div class="box">
           <span class="box-title">ATENCIÓN DISPENSADA / RESOLUCIÓN (Espacio para completar manualmente):</span>
-          <p style="font-family: monospace; white-space: pre-wrap;">${atencion.atencion_dispensada || ''}</p>
+          <p style="font-family: monospace; white-space: pre-wrap;">${atencion.resolucion || ''}</p>
           <div style="height: 100%; min-height: 300px;"></div>
         </div>
 

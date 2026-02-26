@@ -82,14 +82,24 @@ class AtencionController extends Controller
      */
     public function update(Request $request, atencion $atencion)
     {
+        $usid = auth()->user()->id;
+        $usrol = auth()->user()->rol;
         $update = atencion::find($atencion->id);
         $update->estado = 'atendido';
         $update->resolucion = $request->atencion_dispensada;
-        $update->save();
+        if ($usrol == 'SUPERVISOR' || $usrol == 'MESA_ENTRADAS' || $usid == $update->usuario_asignado_id ){
+            $update->save();
+            $ss = true;
+            $msj = 'Atención Dispensada';
+        }else{
+            $ss = false;
+            $msj = 'Atención Dispensada';
+        }
+        
         // La fecha se calcula automáticamente con laravel al modificar un campo modifica el campo updated_at
         return response()->json([
             'success' => true,
-            'message' => 'Atención Dispensada',
+            'message' => 'No es Supervisor o Mesa de Entrada o Personal creador de la atención',
             'data' => $update
         ], 200);
     }

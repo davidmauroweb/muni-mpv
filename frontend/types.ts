@@ -79,9 +79,9 @@ export interface Atencion {
   estado: EstadoAtencion;
   origen: OrigenAtencion;
   
-  creada_por: string; // User ID
+  usuario_creador_id: string; // User ID
   creada_por_nombre: string;
-  asignada_a: string | null; // User ID
+  usuario_asignado_id: string | null; // User ID
   asignada_a_nombre: string | null;
   
   // Personnel fields
@@ -91,7 +91,7 @@ export interface Atencion {
   
   observaciones?: string;
   resolucion?: string;
-  atencion_dispensada?: string;
+  resolucion?: string;
   
   fecha_creacion: string;
   created_date: string;

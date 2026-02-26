@@ -62,7 +62,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
             <div className="hidden md:flex items-center gap-4 pl-4 border-l border-blue-800 flex-shrink-0">
                <div className="text-right hidden lg:block">
-                 <p className="text-xs font-bold text-white uppercase tracking-tight">{user.id} {user.nombre} {user.apellido}</p>
+                 <p className="text-xs font-bold text-white uppercase tracking-tight">{user.nombre} {user.apellido}</p>
                  <p className="text-[10px] text-blue-400 font-black uppercase tracking-widest">{user.rol}</p>
                </div>
                <button onClick={logout} className="p-2.5 bg-blue-800 text-blue-200 hover:text-white hover:bg-red-600 rounded-xl transition-all shadow-lg group">

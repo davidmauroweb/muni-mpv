@@ -34,7 +34,7 @@ class AtencionController extends Controller
         $nuevo = new atencion();
         $nuevo->solicitante_id = $request->solicitante_id;
         $nuevo->usuario_creador_id = auth()->user()->id;
-        $nuevo->usuario_asignado_id = $request->asignada_a="" ? null : $request->asignada_a;
+        $nuevo->usuario_asignado_id = $request->usuario_asignado_id="" ? null : $request->usuario_asignado_id;
         $nuevo->estado = $request->filled('asignada_a') ? 'en_atencion' : 'registrado';
         $nuevo->fecha = Carbon::now()->format('Y-m-d');
         $nuevo->motivo = $request->tipo_tramite;
@@ -51,6 +51,7 @@ class AtencionController extends Controller
             'solicitante_telefono' => $request->solicitante_telefono,
             'motivo' => $request->tipo_tramite,
             'atencion_dispensada' => $request->atencion_dispensada,
+            'descripcion' => $request->descripcion,
             'personal_nombre' => $acargo->nombre." ".$acargo->apellido,
             'personal_cargo' => $acargo->rol,
         ];

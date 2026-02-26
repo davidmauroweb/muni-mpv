@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('motivo');
             $table->string('descripcion');
             $table->string('resolucion')->nullable();
+            $table->string('atencion_dispensada')->nullable();
             $table->timestamps();
         });
     }

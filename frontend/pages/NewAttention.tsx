@@ -78,7 +78,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             solicitante_domicilio : selectedSolicitante.domicilio,
             tipo_tramite: tipoTramite,
             descripcion: descripcion,
-            asignada_a: selectedPersonalId,
+            usuario_asignado_id: selectedPersonalId,
             asignada_a_nombre: personal ? `${personal.nombre} ${personal.apellido}` : null,
         });
 

@@ -91,7 +91,7 @@ export interface Atencion {
   
   observaciones?: string;
   resolucion?: string;
-  resolucion?: string;
+  atencion_dispensada?: string;
   
   fecha_creacion: string;
   created_date: string;

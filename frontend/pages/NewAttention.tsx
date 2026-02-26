@@ -81,7 +81,6 @@ const handleSubmit = async (e: React.FormEvent) => {
             usuario_asignado_id: selectedPersonalId,
             asignada_a_nombre: personal ? `${personal.nombre} ${personal.apellido}` : null,
         });
-
         if (res.success) {
             if (res.data) {
                 printVoucher(res.data);
@@ -175,7 +174,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                         value={selectedPersonalId}
                         onChange={e => setSelectedPersonalId(e.target.value)}
                     >
-                        <option value="null">Sin asignar (Pendiente)</option>
+                        <option value="">Sin asignar (Pendiente)</option>
                         {personalList.map(p => <option key={p.id} value={p.id}>{p.nombre} {p.apellido} - {p.area}</option>)}
                     </select>
                     {user?.rol === UserRole.PERSONAL && <p className="text-[10px] text-blue-500 font-bold uppercase tracking-widest mt-2 ml-1">Auto-asignado por rol</p>}

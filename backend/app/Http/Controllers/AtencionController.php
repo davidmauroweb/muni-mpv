@@ -34,7 +34,7 @@ class AtencionController extends Controller
         $nuevo = new atencion();
         $nuevo->solicitante_id = $request->solicitante_id;
         $nuevo->usuario_creador_id = auth()->user()->id;
-        $nuevo->usuario_asignado_id = $request->usuario_asignado_id="" ? null : $request->usuario_asignado_id;
+        $nuevo->usuario_asignado_id = $request->usuario_asignado_id ==""?null: $request->usuario_asignado_id;
         $nuevo->estado = $request->filled('asignada_a') ? 'en_atencion' : 'registrado';
         $nuevo->fecha = Carbon::now()->format('Y-m-d');
         $nuevo->motivo = $request->tipo_tramite;
@@ -42,6 +42,13 @@ class AtencionController extends Controller
         $nuevo->resolucion = null;
         $nuevo->save();
         $acargo = User::where('id', $nuevo->usuario_asignado_id)->select('nombre','apellido','rol')->first();
+        if(!$acargo){
+            $personal = "-";
+            $rol = "Sin Asignar";
+        }else{
+            $personal = $acargo->nombre." ".$acargo->apellido;
+            $rol = $acargo->rol;
+        }
         $datos = [
             'id' => $nuevo->id,
             'fecha_creacion' => $nuevo->created_at,
@@ -52,15 +59,15 @@ class AtencionController extends Controller
             'motivo' => $request->tipo_tramite,
             'atencion_dispensada' => $request->atencion_dispensada,
             'descripcion' => $request->descripcion,
-            'personal_nombre' => $acargo->nombre." ".$acargo->apellido,
-            'personal_cargo' => $acargo->rol,
+            'personal_nombre' => $personal,
+            'personal_cargo' => $rol,
         ];
         return response()->json([
             'success' => true,
             'message' => 'Atención Creada',
             'data' => $datos
         ], 200);
-    }
+        }
 
     /**
      * Display the specified resource.

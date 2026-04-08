@@ -54,10 +54,10 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
             <nav className="hidden md:flex items-center gap-1 bg-blue-950/30 p-1 rounded-2xl overflow-x-auto no-scrollbar">
               <NavItem to="/" icon={LayoutDashboard} label="Panel" />
-              <NavItem to="/nueva-atencion" icon={PlusCircle} label="Nueva Atención" />
+              {(user.rol !== UserRole.ADMIN) && <NavItem to="/nueva-atencion" icon={PlusCircle} label="Nueva Atención" />}
               <NavItem to="/atenciones" icon={FileText} label="Atenciones" />
               <NavItem to="/solicitantes" icon={Users} label="Solicitantes" />
-              {(user.rol === UserRole.ADMIN || user.rol === UserRole.SUPERVISOR) && <NavItem to="/usuarios" icon={ShieldAlert} label="Usuarios" />}
+              {(user.rol === UserRole.ADMIN) && <NavItem to="/usuarios" icon={ShieldAlert} label="Usuarios" />}
             </nav>
 
             <div className="hidden md:flex items-center gap-4 pl-4 border-l border-blue-800 flex-shrink-0">
@@ -78,10 +78,10 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div className={`md:hidden bg-blue-900 overflow-hidden transition-all duration-300 border-t border-blue-800 ${isMobileMenuOpen ? 'max-h-[32rem]' : 'max-h-0'}`}>
           <div className="p-4 space-y-2">
               <NavItem to="/" icon={LayoutDashboard} label="Panel Principal" />
-              <NavItem to="/nueva-atencion" icon={PlusCircle} label="Nueva Atención" />
+              {(user.rol !== UserRole.ADMIN) && <NavItem to="/nueva-atencion" icon={PlusCircle} label="Nueva Atención" />}
               <NavItem to="/atenciones" icon={FileText} label="Atenciones" />
               <NavItem to="/solicitantes" icon={Users} label="Solicitantes" />
-              {(user.rol === UserRole.ADMIN || user.rol === UserRole.SUPERVISOR) && <NavItem to="/usuarios" icon={ShieldAlert} label="Usuarios" />}
+              {(user.rol === UserRole.ADMIN) && <NavItem to="/usuarios" icon={ShieldAlert} label="Usuarios" />}
               <button onClick={logout} className="w-full flex items-center gap-2 px-4 py-3 bg-red-600/20 text-red-200 rounded-xl font-bold uppercase tracking-wider text-xs mt-4">
                 <LogOut className="w-4 h-4" /> Cerrar Sesión
               </button>

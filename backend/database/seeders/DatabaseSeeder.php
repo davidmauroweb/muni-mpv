@@ -20,8 +20,8 @@ class DatabaseSeeder extends Seeder
         User::insert([[
             'name' => 'Administrador',
             'rol' => 'ADMIN',
-            'nombre' => 'Nombre Admin',
-            'apellido' => 'AP Admin',
+            'nombre' => 'Admin',
+            'apellido' => 'Istrador',
             'password' => Hash::make('12345678'),
             'area' => 'all'],
             [
@@ -51,6 +51,8 @@ class DatabaseSeeder extends Seeder
             'usuario_creador_id' => 1,
             'usuario_asignado_id' => 1,
             'estado' => 'ASIGNADO',
+            'sx' => FALSE,
+            'edad' => 'De 35 a 49 años',
             'descripcion' => 'desc',
             'fecha' => '2026/02/21',
             'motivo' => 'Motivo Prueba',

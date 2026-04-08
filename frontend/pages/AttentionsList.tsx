@@ -40,8 +40,9 @@ export const AttentionsList: React.FC = () => {
     setFiltered(result);
   }, [searchText, statusFilter, atenciones]);
 
-  const handleStartAttention = (id: string) => {
-    StorageService.updateAtencion(id, { 
+  const handleStartAttention = async (id: string) => {
+    await StorageService.updateAtencion({ 
+      id: id,
       estado: EstadoAtencion.EN_ATENCION,
       fecha_inicio_atencion: new Date().toISOString()
     });
@@ -51,7 +52,11 @@ export const AttentionsList: React.FC = () => {
   const openDetailModal = (atencion: Atencion) => {
     setSelectedAtencion(atencion);
     setDispenseText(atencion.resolucion || '');
-    setIsModalOpen(true);
+    if (user.id === atencion.usuario_asignado_id || user.rol === 'SUPERVISOR') {
+        setIsModalOpen(true);
+      }else{
+        alert('No posee permisos para editar la Atención')
+      }
   };
 
   const handleSaveResolution = async () => {
@@ -88,7 +93,7 @@ export const AttentionsList: React.FC = () => {
 
     // PERSONAL: Can edit only assigned resolutions, but NOT if already saved (status ATENDIDO)
     if (user.rol === UserRole.PERSONAL) {
-        return user.id === atencion.asignada_a && atencion.estado !== EstadoAtencion.ATENDIDO;
+        return user.id === atencion.usuario_asignado_id && atencion.estado !== EstadoAtencion.ATENDIDO;
     }
 
     return false;
@@ -135,6 +140,7 @@ export const AttentionsList: React.FC = () => {
                     <tr>
                         <th className="p-4 font-bold text-xs text-slate-400 uppercase tracking-widest whitespace-nowrap">Fecha / N°</th>
                         <th className="p-4 font-bold text-xs text-slate-400 uppercase tracking-widest">Solicitante</th>
+                        <th className="p-4 font-bold text-xs text-slate-400 uppercase tracking-widest">Sexo/Edad</th>
                         <th className="p-4 font-bold text-xs text-slate-400 uppercase tracking-widest">Motivo</th>
                         <th className="p-4 font-bold text-xs text-slate-400 uppercase tracking-widest">Asignado</th>
                         <th className="p-4 font-bold text-xs text-slate-400 uppercase tracking-widest text-center">Estado</th>
@@ -151,6 +157,10 @@ export const AttentionsList: React.FC = () => {
                             <td className="p-4">
                                 <div className="font-bold text-slate-900">{atencion.solicitante_nombre}</div>
                                 <div className="text-xs text-slate-500">{atencion.solicitante_dni}</div>
+                            </td>
+                            <td className="p-4">
+                                <div className="font-bold text-slate-900">{atencion.sx ? 'Mujer' : 'Hombre'}</div>
+                                <div className="text-xs text-slate-500">{atencion.edad}</div>
                             </td>
                             <td className="p-4">
                                 <div className="text-sm font-medium text-slate-700 truncate max-w-[200px]" title={atencion.motivo}>{atencion.motivo}</div>

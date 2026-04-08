@@ -5,6 +5,42 @@ export enum UserRole {
   MESA_ENTRADAS = 'MESA_ENTRADAS',
   PERSONAL = 'PERSONAL'
 }
+/*
+export enum UserArea {
+  SOCIAL = '314',
+  GESTION = '1',
+  SALUD = '2',
+  MESA_ENTRADAS = '3',
+  TERCERA_EDAD = '4',
+  INCLUSION = '5',
+  NIÑEZ = '6',
+  ADMINISTRACION = '7'
+}
+*/
+
+export const UserArea = {
+  314 : 'Social',
+  1 : 'Gestión',
+  2 : 'Salud',
+  3 : 'Mesa de entradas',
+  4 : 'Tercera edad',
+  5 : 'Inclusion',
+  6 : 'Niñez',
+  7 : 'Administración',
+  8 : 'Mas de 65 años'
+} as const;
+
+export const Edades = {
+  0 : 'Menos de 1 año',
+  1 : 'De 1 a 4 años',
+  2 : 'De 5 a 9 años',
+  3 : 'De 10 a 14 años',
+  4 : 'De 15 a 19 años',
+  5 : 'De 20 a 34 años',
+  6 : 'De 35 a 49 años',
+  7 : 'De 50 a 64 años',
+  8 : 'Mas de 65 años'
+} as const;
 
 export enum EstadoAtencion {
   PENDIENTE = 'pendiente',
@@ -65,6 +101,8 @@ export interface Stats {
 export interface Atencion {
   id: string;
   numero_atencion: string;
+  sx: boolean;
+  edad: string;
   
   // Ciudadano (Solicitante)
   solicitante_id: string;
@@ -79,9 +117,9 @@ export interface Atencion {
   estado: EstadoAtencion;
   origen: OrigenAtencion;
   
-  creada_por: string; // User ID
+  usuario_creador_id: string; // User ID
   creada_por_nombre: string;
-  asignada_a: string | null; // User ID
+  usuario_asignado_id: string | null; // User ID
   asignada_a_nombre: string | null;
   
   // Personnel fields

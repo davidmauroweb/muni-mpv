@@ -24,12 +24,15 @@ const AppContent = () => {
     <Layout>
       <Routes>
         <Route path="/" element={<Dashboard />} />
-        <Route path="/nueva-atencion" element={<NewAttention />} />
+        {(user.rol !== UserRole.ADMIN) && (
+          <Route path="/nueva-atencion" element={<NewAttention />} />
+        )}
+        
         <Route path="/atenciones" element={<AttentionsList />} />
         <Route path="/solicitantes" element={<Applicants />} />
         
         {/* Protected Users/Staff Route */}
-        {(user.rol === UserRole.ADMIN || user.rol === UserRole.SUPERVISOR) && (
+        {(user.rol === UserRole.ADMIN) && (
           <Route path="/usuarios" element={<Users />} />
         )}
 

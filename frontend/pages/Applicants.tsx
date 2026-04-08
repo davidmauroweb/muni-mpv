@@ -58,22 +58,41 @@ export const Applicants: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm('¿Está seguro de eliminar este solicitante? Esta acción no se puede deshacer.')) {
-        StorageService.delete(id);
-        loadSolicitantes();
-    }
-  };
+        try {
+            const response = await StorageService.delete(id);
 
-  const viewHistory = (id: string, name: string) => {
-    const all = StorageService.getAtenciones();
-    const history = all.filter(a => a.solicitante_id === id);
-    history.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+            if (response.success) {
+                alert(response.message);
+                await loadSolicitantes();
+            } else {
+                alert(`Error: ${response.message}`);
+            }
+        } catch (error) {
+            console.error("Error al eliminar:", error);
+            alert("No se pudo eliminar el solicitante debido a un error de red o del servidor.");
+        }
+    }
+};
+
+const viewHistory = async (id: number, name: string) => {
+  try {
+    const all = await StorageService.getAtenciones() || []; 
+    const history = all.filter((a: any) => a.solicitante_id === id);
+    
+    history.sort((a: any, b: any) => 
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
     
     setSelectedHistory(history);
     setSelectedSolicitanteName(name);
     setHistoryOpen(true);
-  };
+  } catch (error) {
+    console.error("Error al obtener el historial:", error);
+  }
+};
+
 
   const openDetailModal = (atencion: Atencion) => {
     setSelectedAtencion(atencion);

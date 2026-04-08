@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{atencion};
+use App\Models\{atencion,User};
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -13,7 +13,9 @@ class AtencionController extends Controller
      */
     public function index()
     {
-        return atencion::join('solicitantes', 'solicitantes.id', 'atencions.solicitante_id')->select('solicitantes.nombre_apellido AS solicitante_nombre','solicitantes.dni AS solicitante_dni','atencions.*')->get();
+        return atencion::join('solicitantes', 'solicitantes.id', 'atencions.solicitante_id')
+            ->leftjoin('users','atencions.usuario_asignado_id','users.id')
+            ->select('solicitantes.nombre_apellido AS solicitante_nombre','solicitantes.dni AS solicitante_dni','atencions.*','users.apellido AS personal_nombre', 'users.area AS personal_cargo')->get();
     }
 
     /**
@@ -32,19 +34,44 @@ class AtencionController extends Controller
         $nuevo = new atencion();
         $nuevo->solicitante_id = $request->solicitante_id;
         $nuevo->usuario_creador_id = auth()->user()->id;
-        $nuevo->usuario_asignado_id = $request->asignada_a="" ? null : $request->asignada_a;
-        $nuevo->estado = $request->filled('asignada_a') ? 'ASIGNADO' : 'PENDIENTE';
+        $nuevo->usuario_asignado_id = $request->usuario_asignado_id ==""?null: $request->usuario_asignado_id;
+        $nuevo->estado = $request->filled('asignada_a') ? 'en_atencion' : 'registrado';
         $nuevo->fecha = Carbon::now()->format('Y-m-d');
         $nuevo->motivo = $request->tipo_tramite;
         $nuevo->descripcion = $request->descripcion;
-        $nuevo->resolucion = "";
+        $nuevo->resolucion = null;
+        $nuevo->edad = $request->edad;
+        $nuevo->sx = $request->sx;
         $nuevo->save();
+        $acargo = User::where('id', $nuevo->usuario_asignado_id)->select('nombre','apellido','rol')->first();
+        if(!$acargo){
+            $personal = "-";
+            $rol = "Sin Asignar";
+        }else{
+            $personal = $acargo->nombre." ".$acargo->apellido;
+            $rol = $acargo->rol;
+        }
+        $datos = [
+            'id' => $nuevo->id,
+            'fecha_creacion' => $nuevo->created_at,
+            'solicitante_nombre' => $request->solicitante_nombre,
+            'solicitante_dni' => $request->solicitante_dni,
+            'solicitante_domicilio' => $request->solicitante_domicilio,
+            'solicitante_telefono' => $request->solicitante_telefono,
+            'motivo' => $request->tipo_tramite,
+            'atencion_dispensada' => $request->atencion_dispensada,
+            'descripcion' => $request->descripcion,
+            'personal_nombre' => $personal,
+            'personal_cargo' => $rol,
+            'sx' => $nuevo->sx,
+            'edad' => $nuevo->edad,
+        ];
         return response()->json([
             'success' => true,
             'message' => 'Atención Creada',
-            'data' => $nuevo
+            'data' => $datos
         ], 200);
-    }
+        }
 
     /**
      * Display the specified resource.
@@ -67,14 +94,24 @@ class AtencionController extends Controller
      */
     public function update(Request $request, atencion $atencion)
     {
+        $usid = auth()->user()->id;
+        $usrol = auth()->user()->rol;
         $update = atencion::find($atencion->id);
-        $update->estado = $request->estado;
+        $update->estado = 'atendido';
         $update->resolucion = $request->atencion_dispensada;
-        $update->save();
+        if ($usrol == 'SUPERVISOR' || $usrol == 'MESA_ENTRADAS' || $usid == $update->usuario_asignado_id ){
+            $update->save();
+            $ss = true;
+            $msj = 'Atención Dispensada';
+        }else{
+            $ss = false;
+            $msj = 'Atención Dispensada';
+        }
+        
         // La fecha se calcula automáticamente con laravel al modificar un campo modifica el campo updated_at
         return response()->json([
             'success' => true,
-            'message' => 'Atención Dispensada',
+            'message' => 'No es Supervisor o Mesa de Entrada o Personal creador de la atención',
             'data' => $update
         ], 200);
     }

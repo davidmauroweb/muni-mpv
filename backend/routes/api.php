@@ -26,6 +26,7 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
 Route::middleware(['auth:api', 'personal'])->group(function () {
     Route::post('/solicitantes', [SolicitanteController::class, 'store']);
     Route::post('/atenciones', [AtencionController::class, 'store']);
+    Route::put('/atenciones/{atencion}', [AtencionController::class, 'update']);
 });
 
 # MESA DE ENTRADAS actualiza y elimina solicitantes -> incluye funciones de personal
@@ -35,7 +36,7 @@ Route::middleware(['auth:api', 'me'])->group(function () {
 });
 
 # SUPERVISOR actualiza atenciones -> incluye funciones de mesa de entradas que, también, cumple funciones de personal.
-Route::middleware(['auth:api', 'super'])->group(function () {
-    Route::put('/atenciones/{atencion}', [AtencionController::class, 'update']);
-});
+#Route::middleware(['auth:api', 'super'])->group(function () {
+#    Route::put('/atenciones/{atencion}', [AtencionController::class, 'update']);
+#});
 ?>

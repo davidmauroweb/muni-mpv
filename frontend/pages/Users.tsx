@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { fakeUserService } from '../services/fakeUserService';
-import { User, UserRole } from '../types';
+import { User, UserArea, UserRole } from '../types';
 import { UserPlus, Edit3, Trash2, X, Save, Shield, Key } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-
+export type UserAreaId = keyof typeof UserArea;
 export const Users: React.FC = () => {
   const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
@@ -34,7 +34,6 @@ export const Users: React.FC = () => {
     try {
       const user: User = {
       ...formData as User,
-      //id: editingId || crypto.randomUUID(),
       id: editingId,
       password: formData.password || (editingId ? (users.find(u => u.id === editingId)?.password) : '123'),
       debe_cambiar_password: !editingId,
@@ -96,7 +95,7 @@ export const Users: React.FC = () => {
                                         <Shield className="w-3 h-3" /> {u.rol}
                                     </span>
                                 </td>
-                                <td className="p-6 text-sm font-medium text-slate-600">{u.area}</td>
+                                <td className="p-6 text-sm font-medium text-slate-600">{UserArea[u.area as keyof typeof UserArea] || "Sin área"}</td>
                                 <td className="p-6 text-center">
                                     {u.activo ? (
                                         <span className="text-[10px] font-black text-green-600 bg-green-50 px-2 py-1 rounded border border-green-100">ACTIVO</span>
@@ -143,7 +142,21 @@ export const Users: React.FC = () => {
                         </div>
                         <div className="col-span-1">
                             <label className="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-wider">Área</label>
-                            <input required className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" value={formData.area} onChange={e => setFormData({...formData, area: e.target.value})}/>
+<select 
+  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" 
+  value={formData.area} 
+  onChange={e => {
+    // Convertimos el string del input a número y le asignamos el tipo correcto
+    const value = e.target.value as UserAreaId;
+    setFormData({ ...formData, area: value });
+  }}
+>
+  {Object.entries(UserArea).map(([id, nombre]) => (
+    <option key={id} value={id}>
+      {nombre}
+    </option>
+  ))}
+</select>
                         </div>
                         <div className="col-span-2">
                             <label className="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-wider">Contraseña {editingId && '(Dejar en blanco para no cambiar)'}</label>

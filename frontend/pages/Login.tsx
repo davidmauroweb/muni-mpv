@@ -55,7 +55,7 @@ export const Login: React.FC = () => {
                         required
                         type="text" 
                         className="w-full pl-12 pr-4 py-3.5 bg-black/20 border border-white/10 rounded-2xl focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 transition-all font-medium text-white placeholder:text-white/30 backdrop-blur-sm"
-                        placeholder="Ej: jperon"
+                        placeholder="Ej: usuario"
                         value={username}
                         onChange={e => setUsername(e.target.value)}
                     />

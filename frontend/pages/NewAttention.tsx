@@ -4,7 +4,7 @@ import { fakeAtencionService } from '../services/fakeAtencionService';
 import { fakeUserService } from '../services/fakeUserService';
 import { StorageService } from '../services/storage';
 import { useAuth } from '../context/AuthContext';
-import { User, Solicitante, UserRole } from '../types';
+import { User, Solicitante, UserRole, Edades } from '../types';
 import { Search, Plus, User as UserIcon, Printer, X, Save, AlertCircle } from 'lucide-react';
 import { printVoucher } from '../utils/printer';
 
@@ -19,6 +19,21 @@ export const NewAttention: React.FC = () => {
   const [descripcion, setDescripcion] = useState('');
   const [selectedPersonalId, setSelectedPersonalId] = useState('');
   const [error, setError] = useState('');
+  const [sx, setSx] = useState('0'); 
+  const [edad, setEdad] = useState('');
+
+  // Create/Edit Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    nombre_apellido: '', dni: '', domicilio: '', telefono: ''
+  });
+
+  const handleOpenCreate = () => {
+  setEditingId(null);
+  setFormData({ nombre_apellido: '', dni: '', domicilio: '', telefono: '' });
+  setIsModalOpen(true);
+  };
   
   // Search State
   const [searchTerm, setSearchTerm] = useState('');
@@ -72,12 +87,17 @@ const handleSubmit = async (e: React.FormEvent) => {
 
         const res = await fakeAtencionService.create({
             solicitante_id: selectedSolicitante.id,
+            solicitante_nombre: selectedSolicitante.nombre_apellido,
+            solicitante_dni : selectedSolicitante.dni,
+            solicitante_telefono : selectedSolicitante.telefono,
+            solicitante_domicilio : selectedSolicitante.domicilio,
             tipo_tramite: tipoTramite,
             descripcion: descripcion,
-            asignada_a: selectedPersonalId || null,
+            sx: sx,
+            edad: edad,
+            usuario_asignado_id: selectedPersonalId,
             asignada_a_nombre: personal ? `${personal.nombre} ${personal.apellido}` : null,
         });
-
         if (res.success) {
             if (res.data) {
                 printVoucher(res.data);
@@ -89,7 +109,23 @@ const handleSubmit = async (e: React.FormEvent) => {
         }
 };
 
-  return (
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+    const solicitante: Solicitante = {
+        ...formData,
+    };
+
+    const savedSolicitante = await StorageService.save(solicitante);
+
+    setIsModalOpen(false);
+    } catch (error: any) {
+        alert(error);
+        console.error(error);
+    }
+  };
+
+  return (   
     <div className="max-w-5xl mx-auto space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="mb-2">
         <h1 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Nueva Atención</h1>
@@ -112,7 +148,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                 <p className="text-slate-500 text-xs font-medium">Identifique al ciudadano</p>
              </div>
              {!selectedSolicitante && (
-                 <button type="button" onClick={() => setShowCreateSolicitante(true)} className="flex items-center gap-2 px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg font-bold uppercase tracking-wider text-[10px]">
+                 <button type="button" onClick={handleOpenCreate} className="flex items-center gap-2 px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg font-bold uppercase tracking-wider text-[10px]">
                     <Plus className="w-3 h-3" /> Nuevo
                 </button>
              )}
@@ -147,6 +183,24 @@ const handleSubmit = async (e: React.FormEvent) => {
               <button type="button" onClick={() => setSelectedSolicitante(null)} className="px-3 py-1.5 bg-white text-slate-600 rounded-lg font-bold text-[10px] uppercase tracking-wider border hover:bg-slate-50">Cambiar</button>
             </div>
           )}
+          <div className="flex justify-between my-3">
+            <select className="w-2/5 p-3 bg-slate-50 border rounded-xl font-medium text-sm" name="edad" disabled={!selectedSolicitante} value={edad} onChange={(e) => setEdad(e.target.value)}>
+              {Object.entries(Edades).map(([key, value]) => (
+                <option key={key} value={value}>
+                  {value}
+                </option>
+              ))}
+            </select>
+            <select 
+              className="w-1/5 mx-3 p-3 bg-slate-50 border rounded-xl font-medium text-sm" name="sx" disabled={!selectedSolicitante} value={sx} onChange={(e) => setSx(e.target.value)} >
+              <option value="0">Hombre</option>
+              <option value="1">Mujer</option>
+            </select>
+
+            <div className="w-2/5">
+
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -159,6 +213,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                 <input required className="w-full p-3 bg-slate-50 border rounded-xl font-medium text-sm" placeholder="Tipo de trámite (Ej: Ayuda Habitacional)" value={tipoTramite} onChange={e => setTipoTramite(e.target.value)} />
                 <textarea required className="w-full flex-1 p-3 bg-slate-50 border rounded-xl font-medium resize-none min-h-[80px] text-sm" placeholder="Descripción de la solicitud..." value={descripcion} onChange={e => setDescripcion(e.target.value)} />
             </div>
+
 
             {/* Asignación Section */}
             <div className="md:col-span-1 bg-white p-5 rounded-2xl shadow-lg border border-slate-200 flex flex-col justify-between">
@@ -185,6 +240,81 @@ const handleSubmit = async (e: React.FormEvent) => {
             </div>
         </div>
       </form>
+
+      {/* Create/Edit Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-[2rem] shadow-2xl max-w-lg w-full p-8 animate-in fade-in zoom-in-95 duration-200">
+                <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">
+                        {'Nuevo Solicitante'}
+                    </h3>
+                    <button onClick={() => setIsModalOpen(false)} className="p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors"><X className="w-5 h-5 text-slate-500" /></button>
+                </div>
+                
+                <form onSubmit={handleSave} className="space-y-4">
+                    <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nombre Completo *</label>
+                        <input 
+                            required
+                            type="text" 
+                            className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500"
+                            value={formData.nombre_apellido}
+                            onChange={e => setFormData({...formData, nombre_apellido: e.target.value})}
+                        />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">DNI *</label>
+                            <input 
+                                required
+                                type="text" 
+                                className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500"
+                                value={formData.dni}
+                                onChange={e => setFormData({...formData, dni: e.target.value})}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Teléfono</label>
+                            <input 
+                                type="text" 
+                                className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500"
+                                value={formData.telefono}
+                                onChange={e => setFormData({...formData, telefono: e.target.value})}
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Domicilio *</label>
+                        <input 
+                            required
+                            type="text" 
+                            className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500"
+                            value={formData.domicilio}
+                            onChange={e => setFormData({...formData, domicilio: e.target.value})}
+                        />
+                    </div>
+
+                    <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100">
+                        <button 
+                            type="button"
+                            onClick={() => setIsModalOpen(false)} 
+                            className="px-6 py-3 text-slate-600 hover:bg-slate-100 rounded-xl font-bold uppercase tracking-wider text-xs"
+                        >
+                            Cancelar
+                        </button>
+                        <button 
+                            type="submit" 
+                            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-lg font-bold uppercase tracking-wider text-xs"
+                        >
+                            <Save className="w-4 h-4" /> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+      )}
+
     </div>
   );
 };

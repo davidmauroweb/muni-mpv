@@ -8,7 +8,7 @@ export const fakeUserService = {
     return response.data;
   },
 
-  async saveUser(user: User) {
+/*  async saveUser(user: User) {
     //console.log(user.id)
     if (user.id) {
       const response = await api.put(`/users/${user.id}`, user);
@@ -18,6 +18,24 @@ export const fakeUserService = {
       return response.data;
     }
   },
+*/
+
+async saveUser(user: User) {
+  try {
+    if (user.id) {
+      const response = await api.put(`/users/${user.id}`, user);
+      return response.data;
+    } else {
+      const response = await api.post("/users", user);
+      return response.data;
+    }
+  } catch (error: any) {
+    if (error.response?.status === 422) {
+      console.error("Errores de validación Laravel:", error.response.data.errors);
+    }
+    throw error;
+  }
+},
 
   async deleteUser(id: string) {
     const response = await api.delete(`/users/${id}`);

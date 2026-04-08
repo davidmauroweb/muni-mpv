@@ -14,15 +14,17 @@ class mesaentradas
 
         if (!$user) {
             return response()->json([
+                'success' => false,
                 'message' => 'No autenticado'
             ], 401);
         }
     
-        if ($user->rol == 'MESA_ENTRADAS' || $user->rol == 'SUPERVIDOR') {
+        if ($user->rol == 'MESA_ENTRADAS' || $user->rol == 'SUPERVISOR') {
             return $next($request);
         }
 
         return response()->json([
+            'success' => false,
             'message' => 'Acceso no autorizado'
         ], 403);
         

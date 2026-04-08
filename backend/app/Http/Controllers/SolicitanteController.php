@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\solicitante;
+use App\Models\{solicitante,atencion};
 use Illuminate\Http\Request;
 
 class SolicitanteController extends Controller
@@ -70,6 +70,20 @@ class SolicitanteController extends Controller
      */
     public function destroy(solicitante $solicitante)
     {
+        $q = atencion::where('solicitante_id',$solicitante->id)->count();
+        if ($q == 0){
         $solicitante->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Solicitante Eliminado',
+            'data' => $solicitante->nombre_apellido
+        ], 200);
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => 'El solicitante tiene atenciones cargadas '. $q,
+                'data' => $solicitante->nombre_apellido
+            ], 200);
+        }
     }
 }

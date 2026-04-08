@@ -20,68 +20,81 @@ export const Dashboard: React.FC = () => {
   const [data, setData] = useState([]);
   
   useEffect(() => {
-    const fetch = async () => {
-      const atenciones = await StorageService.getAtenciones();
-      setData(atenciones);
+    const fetchData = async () => {
+  
+      const data = await StorageService.getAtenciones();
+  
+      if (!Array.isArray(data)) return;
+  
+      const today = new Date().toDateString();
+      const todays = data.filter(a => new Date(a.created_at).toDateString() === today);
+  
+      const finishedCases = data.filter(a =>
+        a.estado === EstadoAtencion.ATENDIDO &&
+        a.fecha_inicio_atencion &&
+        a.fecha_atencion_dispensada
+      );
+  
+      const totalMinutes = finishedCases.reduce((acc, curr) => {
+        const start = new Date(curr.fecha_inicio_atencion!).getTime();
+        const end = new Date(curr.fecha_atencion_dispensada!).getTime();
+        return acc + (end - start) / (1000 * 60);
+      }, 0);
+  
+      const tmr = finishedCases.length > 0
+        ? Math.round(totalMinutes / finishedCases.length)
+        : 0;
+  
+      setStats({
+        hoy: todays.length,
+        registradas: todays.filter(a => a.estado === EstadoAtencion.REGISTRADO).length,
+        enAtencion: todays.filter(a => a.estado === EstadoAtencion.EN_ATENCION).length,
+        atendidas: todays.filter(a => a.estado === EstadoAtencion.ATENDIDO).length,
+        tmr_minutos: tmr
+      });
+  
+      const hours = Array.from({ length: 10 }, (_, i) => ({ hour: `${i + 8}:00`, count: 0 }));
+      todays.forEach(a => {
+        const h = new Date(a.created_date).getHours();
+        if (h >= 8 && h <= 17) hours[h - 8].count++;
+      });
+      setHourlyData(hours);
+  
+      const areas: Record<string, number> = {};
+      data.forEach(a => {
+        const area = a.personal_cargo?.includes('Social') ? 'Social' :
+                     a.personal_cargo?.includes('Gestión') ? 'Gestión' :
+                     'Administración';
+        areas[area] = (areas[area] || 0) + 1;
+      });
+  
+      setAreaData(Object.entries(areas).map(([name, value]) => ({ name, value })));
+  
+      const now = new Date().getTime();
+      const critical = data.filter(a => {
+        if (a.estado === EstadoAtencion.ATENDIDO) return false;
+        const created = new Date(a.created_date).getTime();
+        const diffHours = (now - created) / (1000 * 60 * 60);
+        return (a.estado === EstadoAtencion.REGISTRADO && diffHours > 24) ||
+               (a.estado === EstadoAtencion.EN_ATENCION && diffHours > 4);
+      });
+  
+      setCriticalCases(critical.slice(0, 3));
+  
+      setAtenciones(
+        [...data]
+          .sort((a, b) => new Date(b.created_date).getTime() - new Date(a.created_date).getTime())
+          .slice(0, 5)
+      );
     };
-    //const data = StorageService.getAtenciones();
-    const today = new Date().toDateString();
-    const todays = data.filter(a => new Date(a.created_date).toDateString() === today);
-    
-    // Calculate TMR (Tiempo Medio de Resolución) for finished cases
-    const finishedCases = data.filter(a => a.estado === EstadoAtencion.ATENDIDO && a.fecha_inicio_atencion && a.fecha_atencion_dispensada);
-    const totalMinutes = finishedCases.reduce((acc, curr) => {
-      const start = new Date(curr.fecha_inicio_atencion!).getTime();
-      const end = new Date(curr.fecha_atencion_dispensada!).getTime();
-      return acc + (end - start) / (1000 * 60);
-    }, 0);
-    const tmr = finishedCases.length > 0 ? Math.round(totalMinutes / finishedCases.length) : 0;
-
-    setStats({
-      hoy: todays.length,
-      registradas: todays.filter(a => a.estado === EstadoAtencion.REGISTRADO).length,
-      enAtencion: todays.filter(a => a.estado === EstadoAtencion.EN_ATENCION).length,
-      atendidas: todays.filter(a => a.estado === EstadoAtencion.ATENDIDO).length,
-      tmr_minutos: tmr
-    });
-
-    // Hourly distribution for today
-    const hours = Array.from({ length: 10 }, (_, i) => ({ hour: `${i + 8}:00`, count: 0 }));
-    todays.forEach(a => {
-      const h = new Date(a.created_date).getHours();
-      if (h >= 8 && h <= 17) hours[h - 8].count++;
-    });
-    setHourlyData(hours);
-
-    // Area Distribution (all time)
-    const areas: Record<string, number> = {};
-    data.forEach(a => {
-      // Since area is not directly in Atencion, we'll use a mock mapping or fallback
-      // In a real app we'd join with Personal. Here we use personal_cargo or similar context if available
-      // For demo, let's categorize by a prefix or just mock area based on staff assigned
-      const area = a.personal_cargo.includes('Social') ? 'Social' : 
-                   a.personal_cargo.includes('Gestión') ? 'Gestión' : 'Administración';
-      areas[area] = (areas[area] || 0) + 1;
-    });
-    setAreaData(Object.entries(areas).map(([name, value]) => ({ name, value })));
-
-    // Critical Cases tracking
-    const now = new Date().getTime();
-    const critical = data.filter(a => {
-      if (a.estado === EstadoAtencion.ATENDIDO) return false;
-      const created = new Date(a.created_date).getTime();
-      const diffHours = (now - created) / (1000 * 60 * 60);
-      return (a.estado === EstadoAtencion.REGISTRADO && diffHours > 24) || 
-             (a.estado === EstadoAtencion.EN_ATENCION && diffHours > 4);
-    });
-    setCriticalCases(critical.slice(0, 3));
-
-    // Latest 5 for display
-    setAtenciones([...data].sort((a, b) => new Date(b.created_date).getTime() - new Date(a.created_date).getTime()).slice(0, 5));
+  
+    fetchData();
+  
   }, []);
 
-  const handleStatusChange = (id: string) => {
-    StorageService.updateAtencion(id, { 
+  const handleStatusChange = async (id: string) => {
+    await StorageService.updateAtencion({ 
+      id: id,
       estado: EstadoAtencion.EN_ATENCION,
       fecha_inicio_atencion: new Date().toISOString()
     });
@@ -103,10 +116,10 @@ export const Dashboard: React.FC = () => {
       {/* Primary Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: 'Atenciones Hoy', value: stats.hoy, icon: TrendingUp, color: 'text-blue-600', bg: 'bg-blue-50', trend: '+12%' },
-          { label: 'En Espera', value: stats.registradas, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-50', trend: '-5%' },
+          { label: 'Atenciones Hoy', value: stats.hoy, icon: TrendingUp, color: 'text-blue-600', bg: 'bg-blue-50', trend: Math.round((stats.hoy / stats.hoy)*100)+'%' },
+          { label: 'En Espera', value: stats.registradas, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-50', trend: Math.round((stats.registradas / stats.hoy)*100)+'%' },
           { label: 'En Atención', value: stats.enAtencion, icon: UsersIcon, color: 'text-indigo-500', bg: 'bg-indigo-50', trend: 'Estable' },
-          { label: 'Tiempo Medio (TMR)', value: `${stats.tmr_minutos}'`, icon: Clock, color: 'text-green-600', bg: 'bg-green-50', trend: '-2 min' },
+          { label: 'Tiempo Medio (TMR)', value: `${stats.tmr_minutos}'`, icon: Clock, color: 'text-green-600', bg: 'bg-green-50', trend: stats.tmr_minutos },
         ].map((item, i) => (
           <div key={i} className="bg-white p-6 rounded-[2rem] shadow-xl border border-slate-100 relative overflow-hidden group hover:scale-[1.02] transition-all">
             <div className={`absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity`}>

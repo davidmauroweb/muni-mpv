@@ -23,7 +23,7 @@ class personal
             ], 401);
         }
     
-        if ($user->rol == 'PERSONAL' || $user->rol == 'MESA_ENTRADAS' || $user->rol == 'SUPERVIDOR') {
+        if ($user->rol == 'PERSONAL' || $user->rol == 'MESA_ENTRADAS' || $user->rol == 'SUPERVISOR') {
             return $next($request);
         }
         return response()->json([

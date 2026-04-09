@@ -60,6 +60,5 @@ class DatabaseSeeder extends Seeder
             'created_at' => '2026/02/21',
             'updated_at' => '2026/02/21',
             ]);
-
     }
 }

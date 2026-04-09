@@ -39,6 +39,8 @@ class AtencionController extends Controller
         $nuevo->fecha = Carbon::now()->format('Y-m-d');
         $nuevo->motivo = $request->tipo_tramite;
         $nuevo->descripcion = $request->descripcion;
+        $nuevo->servicio = $request->servicio;
+        $nuevo->caps = $request->caps;
         $nuevo->resolucion = null;
         $nuevo->edad = $request->edad;
         $nuevo->sx = $request->sx;
@@ -65,6 +67,8 @@ class AtencionController extends Controller
             'personal_cargo' => $rol,
             'sx' => $nuevo->sx,
             'edad' => $nuevo->edad,
+            'caps' => $nuevo->caps,
+            'servicio' => $nuevo->servicio,
         ];
         return response()->json([
             'success' => true,
@@ -97,7 +101,7 @@ class AtencionController extends Controller
         $usid = auth()->user()->id;
         $usrol = auth()->user()->rol;
         $update = atencion::find($atencion->id);
-        $update->estado = 'atendido';
+        $update->estado = $request->estado;
         $update->resolucion = $request->atencion_dispensada;
         if ($usrol == 'SUPERVISOR' || $usrol == 'MESA_ENTRADAS' || $usid == $update->usuario_asignado_id ){
             $update->save();

@@ -6,7 +6,7 @@ const api = axios.create({
     "Content-Type": "application/json"
   }
 });
-// envío token
+// envío token e intercepto sesion caducada
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -16,6 +16,18 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
+    return Promise.reject(error);
+  }
+);
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('muni_session');
+      window.location.reload();
+    }
     return Promise.reject(error);
   }
 );

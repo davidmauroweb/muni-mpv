@@ -1,4 +1,4 @@
-import { Atencion } from "../types";
+import { Atencion, CAPS_MAP, Servicios } from "../types";
 
 export const printVoucher = async (atencion: Atencion): Promise<void> => {
   const printWindow = window.open('', '_blank');
@@ -21,6 +21,7 @@ export const printVoucher = async (atencion: Atencion): Promise<void> => {
           .voucher-no { font-size: 20px; font-weight: bold; border: 2px solid #000; padding: 10px; display: inline-block; margin-top: 15px; }
           .row { display: flex; margin-bottom: 12px; }
           .label { font-weight: bold; width: 150px; flex-shrink: 0; }
+          .labelr { font-weight: bold; width: 150px; flex-shrink: 0; text-align: right;}
           .value { flex-grow: 1; border-bottom: 1px dotted #999; }
           .box { border: 1px solid #000; padding: 15px; margin-top: 20px; height: 225px; }
           .box-title { font-weight: bold; margin-bottom: 10px; display: block; }
@@ -50,10 +51,16 @@ export const printVoucher = async (atencion: Atencion): Promise<void> => {
         <div class="row">
           <span class="label">DNI:</span>
           <span class="value">${atencion.solicitante_dni}</span>
+          <span class="labelr">Domicilio:</span>
+          <span class="value">${atencion.solicitante_domicilio}</span>
         </div>
         <div class="row">
-          <span class="label">Domicilio:</span>
-          <span class="value">${atencion.solicitante_domicilio}</span>
+        <span class="label">Rango Edad:</span>
+          <span class="value">${atencion.edad}</span>
+          <span class="labelr">Atención:</span>
+          <span class="value">${CAPS_MAP[atencion.caps].nombre}</span>
+          <span class="labelr">Servicio:</span>
+          <span class="value">${Servicios[atencion.servicio]}</span>
         </div>
         <div class="row">
           <span class="label">Teléfono:</span>

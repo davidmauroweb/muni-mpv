@@ -4,7 +4,7 @@ import { fakeAtencionService } from '../services/fakeAtencionService';
 import { fakeUserService } from '../services/fakeUserService';
 import { StorageService } from '../services/storage';
 import { useAuth } from '../context/AuthContext';
-import { User, Solicitante, UserRole, Edades } from '../types';
+import { User, Solicitante, UserRole, Edades, CAPS_MAP, Servicios } from '../types';
 import { Search, Plus, User as UserIcon, Printer, X, Save, AlertCircle } from 'lucide-react';
 import { printVoucher } from '../utils/printer';
 
@@ -21,6 +21,8 @@ export const NewAttention: React.FC = () => {
   const [error, setError] = useState('');
   const [sx, setSx] = useState('0'); 
   const [edad, setEdad] = useState('');
+  const [caps, setCaps] = useState('1');
+  const [servicio, setServicio] = useState('1');
 
   // Create/Edit Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -95,6 +97,8 @@ const handleSubmit = async (e: React.FormEvent) => {
             descripcion: descripcion,
             sx: sx,
             edad: edad,
+            caps: caps,
+            servicio: servicio,
             usuario_asignado_id: selectedPersonalId,
             asignada_a_nombre: personal ? `${personal.nombre} ${personal.apellido}` : null,
         });
@@ -183,7 +187,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               <button type="button" onClick={() => setSelectedSolicitante(null)} className="px-3 py-1.5 bg-white text-slate-600 rounded-lg font-bold text-[10px] uppercase tracking-wider border hover:bg-slate-50">Cambiar</button>
             </div>
           )}
-          <div className="flex justify-between my-3">
+          <div className="flex justify-between my-1">
             <select className="w-2/5 p-3 bg-slate-50 border rounded-xl font-medium text-sm" name="edad" disabled={!selectedSolicitante} value={edad} onChange={(e) => setEdad(e.target.value)}>
               {Object.entries(Edades).map(([key, value]) => (
                 <option key={key} value={value}>
@@ -192,14 +196,24 @@ const handleSubmit = async (e: React.FormEvent) => {
               ))}
             </select>
             <select 
-              className="w-1/5 mx-3 p-3 bg-slate-50 border rounded-xl font-medium text-sm" name="sx" disabled={!selectedSolicitante} value={sx} onChange={(e) => setSx(e.target.value)} >
+              className="w-1/5 mx-1 p-3 bg-slate-50 border rounded-xl font-medium text-sm" name="sx" disabled={!selectedSolicitante} value={sx} onChange={(e) => setSx(e.target.value)} >
               <option value="0">Hombre</option>
               <option value="1">Mujer</option>
             </select>
-
-            <div className="w-2/5">
-
-            </div>
+            <select className="w-1/5 mx-1 p-3 bg-slate-50 border rounded-xl font-medium text-sm" name="caps" disabled={!selectedSolicitante} value={caps} onChange={(e) => setCaps(e.target.value)}>
+            {Object.values(CAPS_MAP).sort((a, b) => a.nombre.localeCompare(b.nombre)).map((caps) => (
+              <option key={caps.codigo} value={caps.codigo}>
+                {caps.nombre}
+              </option>
+            ))}
+            </select>
+            <select className="w-2/5 p-3 bg-slate-50 border rounded-xl font-medium text-sm" name="servicio" disabled={!selectedSolicitante} value={servicio} onChange={(e) => setServicio(e.target.value)}>
+            {Object.entries(Servicios).sort(([, a], [, b]) => a.localeCompare(b)).map(([key, value]) => (
+              <option key={key} value={key}>
+                {value}
+              </option>
+            ))}
+            </select>
           </div>
         </div>
 

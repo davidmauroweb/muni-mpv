@@ -5,21 +5,9 @@ export enum UserRole {
   MESA_ENTRADAS = 'MESA_ENTRADAS',
   PERSONAL = 'PERSONAL'
 }
-/*
-export enum UserArea {
-  SOCIAL = '314',
-  GESTION = '1',
-  SALUD = '2',
-  MESA_ENTRADAS = '3',
-  TERCERA_EDAD = '4',
-  INCLUSION = '5',
-  NIÑEZ = '6',
-  ADMINISTRACION = '7'
-}
-*/
 
 export const UserArea = {
-  314 : 'Social',
+  0 : 'Social',
   1 : 'Gestión',
   2 : 'Salud',
   3 : 'Mesa de entradas',
@@ -27,7 +15,7 @@ export const UserArea = {
   5 : 'Inclusion',
   6 : 'Niñez',
   7 : 'Administración',
-  8 : 'Mas de 65 años'
+  8 : 'Atención primaria'
 } as const;
 
 export const Edades = {
@@ -103,7 +91,8 @@ export interface Atencion {
   numero_atencion: string;
   sx: boolean;
   edad: string;
-  
+  caps: number;
+  servicio: number;
   // Ciudadano (Solicitante)
   solicitante_id: string;
   solicitante_nombre: string;
@@ -150,3 +139,109 @@ export interface ApiResponse<T> {
   error?: string;
   status: number;
 }
+
+export interface CentroSalud {
+  nombre: string;
+  codigo: number;
+  dir: string;
+  tel: string;
+}
+
+export const CAPS_MAP: Record<number, CentroSalud> = {
+  328: { 
+    nombre: 'CAPS 01', 
+    codigo: 328, 
+    dir: 'Calle 98 1169', 
+    tel: '2281-413556' 
+  },
+  310: { 
+    nombre: 'CAPS 02', 
+    codigo: 310, 
+    dir: 'Escalada y Bolivar', 
+    tel: '2281-586874' 
+  },
+  301: { 
+    nombre: 'CAPS 03', 
+    codigo: 301, 
+    dir: 'Malvinas 226', 
+    tel: '2281-329386' 
+  },
+  298: { 
+    nombre: 'CAPS 04', 
+    codigo: 298, 
+    dir: 'Tandil 887', 
+    tel: '2281-516248' 
+  },
+  263: { 
+    nombre: 'CAPS 05', 
+    codigo: 263, 
+    dir: 'Calle 2 251', 
+    tel: '2281-587155' 
+  },
+  271: { 
+    nombre: 'CAPS 06', 
+    codigo: 271, 
+    dir: 'Rauch 1375', 
+    tel: '2281-587127' 
+  },
+  280: { 
+    nombre: 'CAPS 07', 
+    codigo: 280, 
+    dir: 'Mitre 963', 
+    tel: '2281-431585' 
+  },
+  352: { 
+    nombre: 'CAPS 08', 
+    codigo: 352, 
+    dir: 'Rivas 1180', 
+    tel: '2281-658338' 
+  },
+  344: { 
+    nombre: 'CAPS 09', 
+    codigo: 344,
+    dir: 'Cte. Franco 50', 
+    tel: '2281-660528' 
+  },
+  336: { 
+    nombre: 'CAPS 10', 
+    codigo: 336, 
+    dir: 'Azucenas 222', 
+    tel: '2281-498122' 
+  },
+  361: { 
+    nombre: 'CAPS 11', 
+    codigo: 361, 
+    dir: 'S. Cabral y Alvear', 
+    tel: '2281-658338' 
+  },
+  379: { 
+    nombre: 'CAPS 12', 
+    codigo: 379, 
+    dir: 'De Paula 1130', 
+    tel: '2281-587018' 
+  },
+  484: { 
+    nombre: 'CAPS 13', 
+    codigo: 484, 
+    dir: 'Calle 4 e/ Maipú y 1ro de Mayo', 
+    tel: '2281-587196' 
+  },
+} as const;
+
+export const Servicios = {
+  '016' : 'Clinica Médica',
+  '014' : 'Tocoginecología',
+  '057' : 'Psicología',
+  '140' : 'Nutrición',
+  '187' : 'Estimulación',
+  '199' : 'Pediatría',
+  '306' : 'Educ. Salud (C)',
+  '314' : 'Servicio Social',
+  '402' : 'Examen de Salud',
+  '434' : 'Planificación',
+  '642' : 'Obstetricia',
+  '706' : 'Educ. Salud',
+  '999' : 'Enfermeria',
+  '998' : 'Vacunación',
+  '997' : 'Ecografía'
+} as const;

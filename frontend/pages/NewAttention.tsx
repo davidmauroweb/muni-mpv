@@ -4,7 +4,7 @@ import { fakeAtencionService } from '../services/fakeAtencionService';
 import { fakeUserService } from '../services/fakeUserService';
 import { StorageService } from '../services/storage';
 import { useAuth } from '../context/AuthContext';
-import { User, Solicitante, UserRole, Edades, CAPS_MAP, Servicios } from '../types';
+import { User, Solicitante, UserRole, Edades, CAPS_MAP, Servicios,UserArea } from '../types';
 import { Search, Plus, User as UserIcon, Printer, X, Save, AlertCircle } from 'lucide-react';
 import { printVoucher } from '../utils/printer';
 
@@ -241,7 +241,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                         onChange={e => setSelectedPersonalId(e.target.value)}
                     >
                         <option value="">Sin asignar (Pendiente)</option>
-                        {personalList.map(p => <option key={p.id} value={p.id}>{p.nombre} {p.apellido} - {p.area}</option>)}
+                        {personalList.map(p => <option key={p.id} value={p.id}>{p.nombre} {p.apellido} - {UserArea[p.area as keyof typeof UserArea]}</option>)}
                     </select>
                     {user?.rol === UserRole.PERSONAL && <p className="text-[10px] text-blue-500 font-bold uppercase tracking-widest mt-2 ml-1">Auto-asignado por rol</p>}
                 </div>

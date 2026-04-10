@@ -27,6 +27,7 @@ class EditarUsuario extends FormRequest
             'apellido' => 'required|string',
             'rol'      => 'required|string',
             'area'     => 'required|string',
+            'activo'   => 'required|boolean',
         ];
     }
     

@@ -5,9 +5,9 @@ import api from '../services/api';
 
 interface AuthContextType {
   user: User | null;
-  login: (username: string, pass: string) => ApiResponse<User>;
+  login: (username: string, pass: string) => Promise<ApiResponse<User>>;
   logout: () => void;
-  updatePassword: (newPass: string) => ApiResponse<User>;
+  updatePassword: (newPass: string) => Promise<ApiResponse<User>>;
   isLoading: boolean;
 }
 
@@ -34,7 +34,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(user);
       return { success: true };
     } catch (error: any) {
-      return { success: false };
+      console.log('Error completo:', error);
+      console.log('Response data:', error.response?.data);
+      return { success: false,  error: error.response?.data?.message || error.message || 'Credenciales inválidas', status: error.response?.status || 500 };
     }
   };
 
@@ -43,9 +45,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('muni_session');
   };
 
-  const updatePassword = (newPass: string): ApiResponse<User> => {
+  const updatePassword = async (newPass: string): Promise<ApiResponse<User>> => {
     if (!user) return { success: false, status: 401 };
-    const allUsers = fakeUserService.getUsers();
+    const allUsers = await fakeUserService.getUsers();
     const idx = allUsers.findIndex(u => u.id === user.id);
     
     allUsers[idx].password = newPass;

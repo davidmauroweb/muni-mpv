@@ -31,13 +31,13 @@ export const Dashboard: React.FC = () => {
   
       const finishedCases = data.filter(a =>
         a.estado === EstadoAtencion.ATENDIDO &&
-        a.fecha_inicio_atencion &&
-        a.fecha_atencion_dispensada
+        a.created_at &&
+        a.updated_at
       );
   
       const totalMinutes = finishedCases.reduce((acc, curr) => {
-        const start = new Date(curr.fecha_inicio_atencion!).getTime();
-        const end = new Date(curr.fecha_atencion_dispensada!).getTime();
+        const start = new Date(curr.created_at!).getTime();
+        const end = new Date(curr.updated_at!).getTime();
         return acc + (end - start) / (1000 * 60);
       }, 0);
   
@@ -55,7 +55,7 @@ export const Dashboard: React.FC = () => {
   
       const hours = Array.from({ length: 10 }, (_, i) => ({ hour: `${i + 8}:00`, count: 0 }));
       todays.forEach(a => {
-        const h = new Date(a.created_date).getHours();
+        const h = new Date(a.created_at).getHours();
         if (h >= 8 && h <= 17) hours[h - 8].count++;
       });
       setHourlyData(hours);
@@ -73,7 +73,7 @@ export const Dashboard: React.FC = () => {
       const now = new Date().getTime();
       const critical = data.filter(a => {
         if (a.estado === EstadoAtencion.ATENDIDO) return false;
-        const created = new Date(a.created_date).getTime();
+        const created = new Date(a.created_at).getTime();
         const diffHours = (now - created) / (1000 * 60 * 60);
         return (a.estado === EstadoAtencion.REGISTRADO && diffHours > 24) ||
                (a.estado === EstadoAtencion.EN_ATENCION && diffHours > 4);
@@ -83,7 +83,7 @@ export const Dashboard: React.FC = () => {
   
       setAtenciones(
         [...data]
-          .sort((a, b) => new Date(b.created_date).getTime() - new Date(a.created_date).getTime())
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
           .slice(0, 5)
       );
     };

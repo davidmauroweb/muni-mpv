@@ -1,4 +1,4 @@
-import { Atencion, CAPS_MAP, Servicios } from "../types";
+import { Atencion, CAPS_MAP, Servicios, UserArea } from "../types";
 
 export const printVoucher = async (atencion: Atencion): Promise<void> => {
   const printWindow = window.open('', '_blank');
@@ -75,7 +75,7 @@ export const printVoucher = async (atencion: Atencion): Promise<void> => {
         </div>
         <div class="row">
           <span class="label">Personal Asignado:</span>
-          <span class="value">${atencion.personal_nombre} (${atencion.personal_cargo})</span>
+          <span class="value">${atencion.personal_nombre} (${UserArea[atencion.personal_cargo as keyof typeof UserArea]})</span>
         </div>
 
         <div class="box">

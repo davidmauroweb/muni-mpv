@@ -21,6 +21,7 @@ class CrearUsuario extends FormRequest
             'nombre'   => 'required|string|max:255',
             'apellido' => 'required|string|max:255',
             'rol'      => 'required|string',
+            'activo'   => 'required|boolean',
             'area'     => 'required|string',
         ];
     }

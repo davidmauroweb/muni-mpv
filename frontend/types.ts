@@ -114,7 +114,7 @@ export interface Atencion {
   // Personnel fields
   personal_id: string;
   personal_nombre: string;
-  personal_cargo: string;
+  personal_cargo: number;
   
   observaciones?: string;
   resolucion?: string;

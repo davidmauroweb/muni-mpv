@@ -47,7 +47,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div className="flex items-center gap-3 flex-shrink-0">
                <img src="https://azuldigital.gob.ar/wp-content/uploads/2024/02/logo-png-blanco-02.png" alt="Muni Azul" className="h-7 lg:h-9 w-auto object-contain" />
                <div className="leading-tight border-l border-blue-700/50 pl-3 hidden xl:block">
-                 <h1 className="font-black text-sm tracking-widest text-white">DESARROLLO DE LA COMUNIDAD</h1>
+                 <h1 className="font-black text-sm tracking-widest text-white">REGISTRO DE ATENCIONES</h1>
                  <p className="text-[8px] text-blue-200 uppercase tracking-widest font-medium">MESA DE ENTRADAS</p>
                </div>
             </div>

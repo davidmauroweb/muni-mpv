@@ -47,10 +47,16 @@ export const Users: React.FC = () => {
 
     setIsModalOpen(false);
 
-  } catch (error: any) {
+} catch (error: any) {
+  const errors = error.response?.data?.errors;
+  if (errors) {
+    const messages = Object.values(errors).flat().join('\n');
+    alert("Error de validación:\n" + messages);
+  } else {
     alert("Error al guardar usuario");
-    console.error(error);
   }
+  console.error(error);
+}
 };
 
   return (
@@ -132,7 +138,11 @@ export const Users: React.FC = () => {
                         </div>
                         <div className="col-span-2">
                             <label className="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-wider">Usuario</label>
-                            <input required className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})}/>
+                            <input required className="p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})}/>
+                            <select className="mx-4 p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"  value={formData.activo ? 'true' : 'false'} onChange={e => setFormData({...formData, activo: e.target.value === 'true'})}>
+                                <option value="true">Activo</option>
+                                <option value="false">Inactivo</option>
+                            </select>
                         </div>
                         <div className="col-span-1">
                             <label className="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-wider">Rol</label>
@@ -142,21 +152,21 @@ export const Users: React.FC = () => {
                         </div>
                         <div className="col-span-1">
                             <label className="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-wider">Área</label>
-<select 
-  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" 
-  value={formData.area} 
-  onChange={e => {
-    // Convertimos el string del input a número y le asignamos el tipo correcto
-    const value = e.target.value as UserAreaId;
-    setFormData({ ...formData, area: value });
-  }}
->
-  {Object.entries(UserArea).map(([id, nombre]) => (
-    <option key={id} value={id}>
-      {nombre}
-    </option>
-  ))}
-</select>
+                            <select 
+                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" 
+                            value={formData.area} 
+                            onChange={e => {
+                                // Convertimos el string del input a número y le asignamos el tipo correcto
+                                const value = e.target.value as UserAreaId;
+                                setFormData({ ...formData, area: value });
+                            }}
+                            ><option>... Seleccionar</option>
+                            {Object.entries(UserArea).map(([id, nombre]) => (
+                                <option key={id} value={id}>
+                                {nombre}
+                                </option>
+                            ))}
+                            </select>
                         </div>
                         <div className="col-span-2">
                             <label className="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-wider">Contraseña {editingId && '(Dejar en blanco para no cambiar)'}</label>
@@ -165,7 +175,7 @@ export const Users: React.FC = () => {
                                 className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" 
                                 value={formData.password || ''} 
                                 onChange={e => setFormData({...formData, password: e.target.value})}
-                                placeholder={editingId ? "********" : "123"}
+                                placeholder={editingId ? "********" : "123123123"} 
                             />
                         </div>
                         <div className="col-span-2 flex justify-end gap-3 pt-6 border-t border-slate-100 mt-4">
@@ -174,7 +184,7 @@ export const Users: React.FC = () => {
                         </div>
                     </form>
                     {!editingId && <div className="mt-4 p-4 bg-blue-50 rounded-2xl flex items-center gap-3 text-blue-700 text-[10px] font-black uppercase border border-blue-100">
-                        <Key className="w-4 h-4"/> Contraseña por defecto: 123
+                        <Key className="w-4 h-4"/> Contraseña por defecto: 123123123
                     </div>}
                 </div>
             </div>

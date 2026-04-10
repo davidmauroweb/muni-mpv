@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             'rol' => 'ADMIN',
             'nombre' => 'Admin',
             'apellido' => 'Istrador',
+            'activo' => True,
             'password' => Hash::make('12345678'),
             'area' => 'all'],
             [
@@ -29,6 +30,7 @@ class DatabaseSeeder extends Seeder
             'rol' => 'MESA_ENTRADAS',
             'nombre' => 'Isaias',
             'apellido' => 'Mauro',
+            'activo' => True,
             'password' => Hash::make('isaisaisa'),
             'area' => 'mesa'],
             [
@@ -36,6 +38,7 @@ class DatabaseSeeder extends Seeder
             'rol' => 'PERSONAL',
             'nombre' => 'Claudia',
             'apellido' => 'Quiroga',
+            'activo' => False,
             'password' => Hash::make('clauclau'),
             'area' => 'personal']]);
         solicitante::insert([

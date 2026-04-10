@@ -22,6 +22,11 @@ class AuthController extends Controller
                 'message' => 'Credenciales inválidas'
             ], 401);
         }
+        if ($user->activo==false) {
+            return response()->json([
+                'message' => 'Usuario Inactivo'
+            ], 401);
+        }
     
         $token = JWTAuth::fromUser($user);
     

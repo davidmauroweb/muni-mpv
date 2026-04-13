@@ -15,7 +15,7 @@ class AtencionController extends Controller
     {
         return atencion::join('solicitantes', 'solicitantes.id', 'atencions.solicitante_id')
             ->leftjoin('users','atencions.usuario_asignado_id','users.id')
-            ->select('solicitantes.nombre_apellido AS solicitante_nombre','solicitantes.dni AS solicitante_dni','atencions.*','users.apellido AS personal_nombre', 'users.area AS personal_cargo')->get();
+            ->select('solicitantes.nombre_apellido AS solicitante_nombre','solicitantes.dni AS solicitante_dni','atencions.*','users.apellido AS personal_nombre', 'users.area AS personal_cargo','solicitantes.domicilio AS solicitante_domicilio','solicitantes.telefono AS solicitante_telefono')->get();
     }
 
     /**
@@ -69,6 +69,7 @@ class AtencionController extends Controller
             'edad' => $nuevo->edad,
             'caps' => $nuevo->caps,
             'servicio' => $nuevo->servicio,
+            'os' => $nuevo->os,
         ];
         return response()->json([
             'success' => true,
@@ -102,6 +103,7 @@ class AtencionController extends Controller
         $usrol = auth()->user()->rol;
         $update = atencion::find($atencion->id);
         $update->estado = $request->estado;
+        $update->os = $request->os;
         $update->resolucion = $request->atencion_dispensada;
         if ($usrol == 'SUPERVISOR' || $usrol == 'MESA_ENTRADAS' || $usid == $update->usuario_asignado_id ){
             $update->save();

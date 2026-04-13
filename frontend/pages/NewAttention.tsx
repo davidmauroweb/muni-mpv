@@ -4,7 +4,7 @@ import { fakeAtencionService } from '../services/fakeAtencionService';
 import { fakeUserService } from '../services/fakeUserService';
 import { StorageService } from '../services/storage';
 import { useAuth } from '../context/AuthContext';
-import { User, Solicitante, UserRole, Edades, CAPS_MAP, Servicios,UserArea } from '../types';
+import { User, Solicitante, UserRole, Edades, CAPS_MAP, Servicios, UserArea } from '../types';
 import { Search, Plus, User as UserIcon, Printer, X, Save, AlertCircle } from 'lucide-react';
 import { printVoucher } from '../utils/printer';
 
@@ -22,8 +22,8 @@ export const NewAttention: React.FC = () => {
   const [sx, setSx] = useState('0'); 
   const [edad, setEdad] = useState('');
   const [caps, setCaps] = useState('1');
-  const [servicio, setServicio] = useState('1');
-
+  const [servicio, setServicio] = useState('016');
+  
   // Create/Edit Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -46,7 +46,7 @@ export const NewAttention: React.FC = () => {
     const fetchPersonal = async () => {
       try {
         const data = await fakeUserService.getPersonalActivo();
-        setPersonalList(data);
+        setPersonalList(data.filter((u: User) => u.activo === true));
       } catch (error) {
         console.error("Error cargando personal:", error);
         setPersonalList([]); 
@@ -97,8 +97,8 @@ const handleSubmit = async (e: React.FormEvent) => {
             descripcion: descripcion,
             sx: sx,
             edad: edad,
-            caps: caps,
-            servicio: servicio,
+            caps: parseInt(caps),
+            servicio: parseInt(servicio),
             usuario_asignado_id: selectedPersonalId,
             asignada_a_nombre: personal ? `${personal.nombre} ${personal.apellido}` : null,
         });
@@ -188,7 +188,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             </div>
           )}
           <div className="flex justify-between my-1">
-            <select className="w-2/5 p-3 bg-slate-50 border rounded-xl font-medium text-sm" name="edad" disabled={!selectedSolicitante} value={edad} onChange={(e) => setEdad(e.target.value)}>
+            <select className="w-2/5 mx-1 p-3 bg-slate-50 border rounded-xl font-medium text-sm" name="edad" disabled={!selectedSolicitante} value={edad} onChange={(e) => setEdad(e.target.value)}>
               {Object.entries(Edades).map(([key, value]) => (
                 <option key={key} value={value}>
                   {value}
@@ -207,7 +207,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               </option>
             ))}
             </select>
-            <select className="w-2/5 p-3 bg-slate-50 border rounded-xl font-medium text-sm" name="servicio" disabled={!selectedSolicitante} value={servicio} onChange={(e) => setServicio(e.target.value)}>
+            <select className="w-2/5 mx-1 p-3 bg-slate-50 border rounded-xl font-medium text-sm" name="servicio" disabled={!selectedSolicitante} value={servicio} onChange={(e) => setServicio(e.target.value)}>
             {Object.entries(Servicios).sort(([, a], [, b]) => a.localeCompare(b)).map(([key, value]) => (
               <option key={key} value={key}>
                 {value}
@@ -216,7 +216,6 @@ const handleSubmit = async (e: React.FormEvent) => {
             </select>
           </div>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Trámite Section */}
             <div className="md:col-span-2 bg-white p-5 rounded-2xl shadow-lg border border-slate-200 flex flex-col space-y-3">
@@ -227,8 +226,6 @@ const handleSubmit = async (e: React.FormEvent) => {
                 <input required className="w-full p-3 bg-slate-50 border rounded-xl font-medium text-sm" placeholder="Tipo de trámite (Ej: Ayuda Habitacional)" value={tipoTramite} onChange={e => setTipoTramite(e.target.value)} />
                 <textarea required className="w-full flex-1 p-3 bg-slate-50 border rounded-xl font-medium resize-none min-h-[80px] text-sm" placeholder="Descripción de la solicitud..." value={descripcion} onChange={e => setDescripcion(e.target.value)} />
             </div>
-
-
             {/* Asignación Section */}
             <div className="md:col-span-1 bg-white p-5 rounded-2xl shadow-lg border border-slate-200 flex flex-col justify-between">
                 <div>

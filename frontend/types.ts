@@ -12,7 +12,7 @@ export const UserArea = {
   2 : 'Salud',
   3 : 'Mesa de entradas',
   4 : 'Tercera edad',
-  5 : 'Inclusion',
+  5 : 'Inclusión',
   6 : 'Niñez',
   7 : 'Administración',
   8 : 'Atención primaria'
@@ -92,6 +92,7 @@ export interface Atencion {
   sx: boolean;
   edad: string;
   caps: number;
+  os: number;
   servicio: number;
   // Ciudadano (Solicitante)
   solicitante_id: string;
@@ -241,7 +242,10 @@ export const Servicios = {
   '434' : 'Planificación',
   '642' : 'Obstetricia',
   '706' : 'Educ. Salud',
-  '999' : 'Enfermeria',
-  '998' : 'Vacunación',
-  '997' : 'Ecografía'
+  '800' : 'Enfermeria',
+  '801' : 'Vacunación',
+  '802' : 'Ecografía',
+  '901' : 'Garrafa',
+  '902' : 'Veterinaria',
+  '903' : 'Bolson Comida'
 } as const;

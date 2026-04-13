@@ -1,4 +1,5 @@
 import { Atencion, CAPS_MAP, Servicios, UserArea } from "../types";
+import { ObraSocial } from "../obrasocial";
 
 export const printVoucher = async (atencion: Atencion): Promise<void> => {
   const printWindow = window.open('', '_blank');
@@ -65,6 +66,8 @@ export const printVoucher = async (atencion: Atencion): Promise<void> => {
         <div class="row">
           <span class="label">Teléfono:</span>
           <span class="value">${atencion.solicitante_telefono || '-'}</span>
+          <span class="labelr">Obra Social:</span>
+          <span class="value">${atencion.os ? ObraSocial[atencion.os as keyof typeof ObraSocial]: ""}</span>
         </div>
         
         <div style="margin: 20px 0; border-top: 1px solid #ccc;"></div>

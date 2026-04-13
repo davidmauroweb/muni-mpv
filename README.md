@@ -25,11 +25,3 @@ Al iniciar los contenedores éstos realizan automaticamente las migraciones con 
 ## Permisos y roles:
 Los roles están filtrado por ruta.  En (backend/routes/api.php)
 
-# TESTING
-Ip 190.189.33.166
-10111 al 22 -> ssh
-24320 al 80 -> http
-24321 al 5432 -> PosgresSQL
-
-docker compose up --build frontend
-docker restart mapp_nginx

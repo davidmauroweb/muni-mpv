@@ -22,6 +22,7 @@ return new class extends Migration
             $table->date('fecha');
             $table->unsignedSmallInteger('servicio');
             $table->unsignedSmallInteger('caps');
+            $table->unsignedSmallInteger('os')->nullable();
             $table->string('motivo');
             $table->string('descripcion');
             $table->string('resolucion')->nullable();

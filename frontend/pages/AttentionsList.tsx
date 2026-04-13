@@ -3,6 +3,7 @@ import { StorageService } from '../services/storage';
 import { Atencion, EstadoAtencion, UserRole } from '../types';
 import { StatusBadge } from '../components/StatusBadge';
 import { printVoucher } from '../utils/printer';
+import { ObraSocial } from '../obrasocial';
 import { Search, Printer, Play, CheckSquare, Edit3, X, Eye, FileText, User, Calendar, Save } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -19,6 +20,7 @@ export const AttentionsList: React.FC = () => {
   const [selectedAtencion, setSelectedAtencion] = useState<Atencion | null>(null);
   const [dispenseText, setDispenseText] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedOs, setSelectedOs] = useState<number>(9999);
 
   useEffect(() => {
     refreshData();
@@ -52,6 +54,7 @@ export const AttentionsList: React.FC = () => {
   const openDetailModal = (atencion: Atencion) => {
     setSelectedAtencion(atencion);
     setDispenseText(atencion.resolucion || '');
+    setSelectedOs(atencion.os || 9999);
     if (user.id === atencion.usuario_asignado_id || user.rol === 'SUPERVISOR') {
         setIsModalOpen(true);
       }else{
@@ -65,7 +68,8 @@ export const AttentionsList: React.FC = () => {
       id: selectedAtencion.id,
       estado: EstadoAtencion.ATENDIDO,
       atencion_dispensada: dispenseText,
-      fecha_atencion_dispensada: new Date().toISOString()
+      fecha_atencion_dispensada: new Date().toISOString(),
+      os: selectedOs
     });
     setIsModalOpen(false);
     refreshData();
@@ -217,25 +221,24 @@ export const AttentionsList: React.FC = () => {
       {/* Detail & Resolution Modal */}
       {isModalOpen && selectedAtencion && (
           <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-              <div className="bg-white rounded-[2.5rem] shadow-2xl max-w-2xl w-full p-8 animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+              <div className="bg-white rounded-[1rem] shadow-2xl max-w-2xl w-full p-8 animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
                   <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
                       <div>
                           <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">Detalle de Atención</h3>
-                          <p className="text-sm text-slate-400 font-mono font-bold">{selectedAtencion.id}</p>
                       </div>
                       <button onClick={() => setIsModalOpen(false)} className="p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors"><X className="w-5 h-5 text-slate-500" /></button>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-8">
                       <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
                           <div className="flex items-center gap-2 mb-3 text-slate-400">
                               <User className="w-4 h-4" />
                               <span className="text-[10px] font-black uppercase tracking-widest">Solicitante</span>
                           </div>
                           <p className="font-bold text-slate-900 text-lg">{selectedAtencion.solicitante_nombre}</p>
-                          <p className="text-sm text-slate-600">DNI: {selectedAtencion.solicitante_dni}</p>
-                          <p className="text-sm text-slate-600">{selectedAtencion.solicitante_domicilio}</p>
-                          {selectedAtencion.solicitante_telefono && <p className="text-sm text-slate-600">{selectedAtencion.solicitante_telefono}</p>}
+                          <p className="text-sm text-slate-600">DNI: <b>{selectedAtencion.solicitante_dni}</b></p>
+                          <p className="text-sm text-slate-600">Domicilio: <b>{selectedAtencion.solicitante_domicilio}</b></p>
+                          {selectedAtencion.solicitante_telefono && <p className="text-sm text-slate-600">Tel. <b>{selectedAtencion.solicitante_telefono}</b></p>}
                       </div>
 
                       <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
@@ -256,21 +259,35 @@ export const AttentionsList: React.FC = () => {
                   </div>
 
                   <div className="mb-6">
-                      <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest mb-3 flex items-center gap-2">
-                          <CheckSquare className="w-4 h-4 text-green-600" /> Resolución / Atención Dispensada
+
+                      <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest mb-3 flex items-center">
+                          <CheckSquare className="w-4 h-1 text-green-600" /> Resolución / Atención Dispensada
                       </h4>
                       
                       {canEditResolution(selectedAtencion) ? (
-                          <div className="space-y-4">
+                        
+                          <div className="space-y-1">
+                            <div className="mb-1">
+                                <select
+                                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl font-medium text-sm"
+                                    value={selectedOs}
+                                    onChange={e => setSelectedOs(Number(e.target.value))}
+                                    disabled={!canEditResolution(selectedAtencion)}
+                                >
+                                    {Object.entries(ObraSocial).map(([key, value]) => (
+                                        <option key={key} value={Number(key)}>{value}</option>
+                                    ))}
+                                </select>
+                            </div>
                               <textarea 
                                 className="w-full border border-slate-300 rounded-2xl p-4 bg-slate-50 focus:ring-4 focus:ring-green-100 focus:border-green-500 h-32 resize-none font-medium text-sm transition-all"
                                 value={dispenseText}
                                 onChange={e => setDispenseText(e.target.value)}
                                 placeholder="Escriba aquí la resolución, derivación o detalles de la atención brindada..."
                               />
-                              <div className="flex justify-end gap-3">
-                                  <button onClick={() => setIsModalOpen(false)} className="px-6 py-3 text-xs font-black uppercase tracking-widest text-slate-500 hover:bg-slate-100 rounded-xl transition-colors">Cancelar</button>
-                                  <button onClick={handleSaveResolution} className="px-8 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 font-black text-xs uppercase tracking-widest shadow-xl transition-all active:scale-95 flex items-center gap-2">
+                              <div className="flex justify-end gap-1">
+                                  <button onClick={() => setIsModalOpen(false)} className="px-6 py-1 text-xs font-black uppercase tracking-widest text-slate-500 hover:bg-slate-100 rounded-xl transition-colors">Cancelar</button>
+                                  <button onClick={handleSaveResolution} className="px-8 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 font-black text-xs uppercase tracking-widest shadow-xl transition-all active:scale-95 flex items-center gap-2">
                                       <Save className="w-4 h-4" /> Guardar Resolución
                                   </button>
                               </div>

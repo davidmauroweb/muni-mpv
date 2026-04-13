@@ -62,9 +62,15 @@ export const Dashboard: React.FC = () => {
   
       const areas: Record<string, number> = {};
       data.forEach(a => {
-        const area = a.personal_cargo?.includes('Social') ? 'Social' :
-                     a.personal_cargo?.includes('Gestión') ? 'Gestión' :
-                     'Administración';
+        const area = a.personal_cargo?.includes(0) ? 'Social' :
+                     a.personal_cargo?.includes(1) ? 'Gestión' :
+                     a.personal_cargo?.includes(2) ? 'Salud' :
+                     a.personal_cargo?.includes(3) ? 'Mesa de entradas' :
+                     a.personal_cargo?.includes(4) ? 'Tercera edad' :
+                     a.personal_cargo?.includes(5) ? 'Inclusión' :
+                     a.personal_cargo?.includes(6) ? 'Niñez' :
+                     a.personal_cargo?.includes(7) ? 'Administración' :
+                     'Atención Primaria';
         areas[area] = (areas[area] || 0) + 1;
       });
   

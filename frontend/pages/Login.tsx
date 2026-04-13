@@ -35,7 +35,7 @@ export const Login: React.FC = () => {
                 alt="Logo" 
                 className="h-16 mx-auto mb-6 drop-shadow-md"
             />
-            <h1 className="text-2xl font-black text-white uppercase tracking-tight drop-shadow-sm">Mesa de Entradas</h1>
+            <h1 className="text-2xl font-black text-white uppercase tracking-tight drop-shadow-sm">Registro de Atenciones</h1>
             <p className="text-blue-200/80 font-medium">Inicie sesión para continuar</p>
         </div>
 

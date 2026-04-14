@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StorageService } from '../services/storage';
-import { Atencion, EstadoAtencion, UserRole } from '../types';
+import { Atencion, EstadoAtencion, UserRole, CAPS_MAP } from '../types';
 import { StatusBadge } from '../components/StatusBadge';
 import { printVoucher } from '../utils/printer';
 import { ObraSocial } from '../obrasocial';
@@ -15,6 +15,18 @@ export const AttentionsList: React.FC = () => {
   // Filter states
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [capsFilter, setCapsFilter] = useState<string>('all');
+
+  const [selectedObraSocial, setselectedObraSocial] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState('');
+  const allObrasSociales = Object.entries(ObraSocial).map(([codigo, nombre]) => ({ 
+        codigo: Number(codigo), 
+        nombre 
+    })).sort((a, b) => a.nombre.localeCompare(b.nombre));
+        const filteredos = allObrasSociales.filter(os => 
+        os.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
   // Modal State for Completing Attention
   const [selectedAtencion, setSelectedAtencion] = useState<Atencion | null>(null);
@@ -27,9 +39,16 @@ export const AttentionsList: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    const rol = user?.rol;
     let result = atenciones;
+    if (rol === 'PERSONAL') {
+        result = result.filter(a => a.usuario_asignado_id === user.id && !a.atencion_dispensada);
+    }
     if (statusFilter !== 'all') {
       result = result.filter(a => a.estado === statusFilter);
+    }
+    if (capsFilter !== 'all') {
+        result = result.filter(a => a.caps === parseInt(capsFilter));
     }
     if (searchText) {
       const lower = searchText.toLowerCase();
@@ -40,7 +59,7 @@ export const AttentionsList: React.FC = () => {
       );
     }
     setFiltered(result);
-  }, [searchText, statusFilter, atenciones]);
+  }, [searchText, statusFilter, atenciones, capsFilter]);
 
   const handleStartAttention = async (id: string) => {
     await StorageService.updateAtencion({ 
@@ -69,7 +88,7 @@ export const AttentionsList: React.FC = () => {
       estado: EstadoAtencion.ATENDIDO,
       atencion_dispensada: dispenseText,
       fecha_atencion_dispensada: new Date().toISOString(),
-      os: selectedOs
+      os: selectedObraSocial?.codigo
     });
     setIsModalOpen(false);
     refreshData();
@@ -124,6 +143,7 @@ export const AttentionsList: React.FC = () => {
                 onChange={e => setSearchText(e.target.value)}
             />
         </div>
+        {user?.rol != 'PERSONAL' && (
         <select 
             className="p-3 bg-white border border-slate-300 rounded-xl font-bold text-xs uppercase tracking-wider text-slate-600 focus:ring-2 focus:ring-blue-500"
             value={statusFilter}
@@ -134,6 +154,21 @@ export const AttentionsList: React.FC = () => {
             <option value={EstadoAtencion.EN_ATENCION}>EN ATENCIÓN</option>
             <option value={EstadoAtencion.ATENDIDO}>ATENDIDO</option>
         </select>
+        )}
+        {user?.rol != 'PERSONAL' && (
+        <select 
+            className="p-3 bg-white border border-slate-300 rounded-xl font-bold text-xs uppercase tracking-wider text-slate-600 focus:ring-2 focus:ring-blue-500"
+            value={capsFilter}
+            onChange={e => setCapsFilter(e.target.value)}
+        >
+            <option value="all">Todos Centros</option>
+            {Object.values(CAPS_MAP).sort((a, b) => a.nombre.localeCompare(b.nombre)).map((caps) => (
+                <option key={caps.codigo} value={caps.codigo}>
+                    {caps.nombre}
+                </option>
+            ))}
+        </select>
+        )}
       </div>
 
       {/* Table View */}
@@ -268,16 +303,37 @@ export const AttentionsList: React.FC = () => {
                         
                           <div className="space-y-1">
                             <div className="mb-1">
-                                <select
-                                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl font-medium text-sm"
-                                    value={selectedOs}
-                                    onChange={e => setSelectedOs(Number(e.target.value))}
-                                    disabled={!canEditResolution(selectedAtencion)}
-                                >
-                                    {Object.entries(ObraSocial).map(([key, value]) => (
-                                        <option key={key} value={Number(key)}>{value}</option>
-                                    ))}
-                                </select>
+
+
+          {!selectedObraSocial ? (
+            <div className="relative">
+                <div className="relative">
+                  <input type="text" className="w-full pl-10 pr-2 py-3 bg-slate-50 border rounded-xl font-medium text-sm" placeholder="Buscar Obra Social" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                  <Search className="w-5 h-5 text-slate-400 absolute left-3 top-3" />
+                </div>
+                {searchTerm.length > 2 && filteredos.length > 0 &&(
+                  <div className="absolute z-20 w-full mt-1 bg-white border rounded-xl shadow-xl overflow-hidden max-h-60 overflow-y-auto">
+                    {filteredos.map(s => (
+                      <button key={s.codigo} type="button" onClick={() => { setselectedObraSocial(s); setSearchTerm(''); }} className="w-full text-left px-4 py-3 hover:bg-blue-50 border-b last:border-0 transition-colors">
+                        <p className="font-bold text-slate-900 text-sm">{s.nombre}</p>
+                      </button>
+                    ))}
+                  </div>
+                )}
+            </div>
+          ) : (
+            <div className="flex items-center justify-between bg-blue-50 p-2 rounded-xl border border-blue-100">
+              <div className="flex items-center gap-3">
+                <div>
+                  <p className="font-black text-blue-900 text-base">{selectedObraSocial.nombre}</p>
+                </div>
+              </div>
+              <button type="button" onClick={() => setselectedObraSocial(null)} className="px-3 py-1.5 bg-white text-slate-600 rounded-lg font-bold text-[10px] uppercase tracking-wider border hover:bg-slate-50">Cambiar</button>
+            </div>
+          )}
+
+
+
                             </div>
                               <textarea 
                                 className="w-full border border-slate-300 rounded-2xl p-4 bg-slate-50 focus:ring-4 focus:ring-green-100 focus:border-green-500 h-32 resize-none font-medium text-sm transition-all"
@@ -294,6 +350,12 @@ export const AttentionsList: React.FC = () => {
                           </div>
                       ) : (
                           <div className="bg-green-50 p-5 rounded-2xl border border-green-100 min-h-[100px]">
+                            <div className="mb-3 pb-3 border-b border-green-200">
+                                <span className="text-xs font-bold text-green-800">Obra Social: </span>
+                                <span className="text-xs text-green-700">
+                                    {selectedAtencion.os ? ObraSocial[selectedAtencion.os as keyof typeof ObraSocial] : 'Sin obra social'}
+                                </span>
+                            </div>
                               {selectedAtencion.resolucion ? (
                                   <p className="text-sm text-green-900 whitespace-pre-wrap font-medium">{selectedAtencion.resolucion}</p>
                               ) : (

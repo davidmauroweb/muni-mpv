@@ -48,6 +48,8 @@ export const printVoucher = async (atencion: Atencion): Promise<void> => {
         <div class="row">
           <span class="label">Solicitante:</span>
           <span class="value">${atencion.solicitante_nombre}</span>
+          <span class="labelr">Teléfono:</span>
+          <span class="value">${atencion.solicitante_telefono || '-'}</span>
         </div>
         <div class="row">
           <span class="label">DNI:</span>
@@ -61,12 +63,10 @@ export const printVoucher = async (atencion: Atencion): Promise<void> => {
           <span class="labelr">Atención:</span>
           <span class="value">${CAPS_MAP[atencion.caps].nombre}</span>
           <span class="labelr">Servicio:</span>
-          <span class="value">${Servicios[atencion.servicio]}</span>
+          <span class="value">${Servicios[atencion.servicio.toString().padStart(3,'0')]}</span>
         </div>
         <div class="row">
-          <span class="label">Teléfono:</span>
-          <span class="value">${atencion.solicitante_telefono || '-'}</span>
-          <span class="labelr">Obra Social:</span>
+          <span class="label">Obra Social:</span>
           <span class="value">${atencion.os ? ObraSocial[atencion.os as keyof typeof ObraSocial]: ""}</span>
         </div>
         
@@ -78,7 +78,7 @@ export const printVoucher = async (atencion: Atencion): Promise<void> => {
         </div>
         <div class="row">
           <span class="label">Personal Asignado:</span>
-          <span class="value">${atencion.personal_nombre} (${UserArea[atencion.personal_cargo as keyof typeof UserArea]})</span>
+          <span class="value">${atencion.personal_nombre} (${UserArea[Number(atencion.personal_cargo) as keyof typeof UserArea] || atencion.personal_cargo})</span>
         </div>
 
         <div class="box">

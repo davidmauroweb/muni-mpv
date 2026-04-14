@@ -13,9 +13,11 @@ class AtencionController extends Controller
      */
     public function index()
     {
-        return atencion::join('solicitantes', 'solicitantes.id', 'atencions.solicitante_id')
+        return atencion::whereDate('fecha', Carbon::today())
+            ->join('solicitantes', 'solicitantes.id', 'atencions.solicitante_id')
             ->leftjoin('users','atencions.usuario_asignado_id','users.id')
-            ->select('solicitantes.nombre_apellido AS solicitante_nombre','solicitantes.dni AS solicitante_dni','atencions.*','users.apellido AS personal_nombre', 'users.area AS personal_cargo','solicitantes.domicilio AS solicitante_domicilio','solicitantes.telefono AS solicitante_telefono')->get();
+            ->select('solicitantes.nombre_apellido AS solicitante_nombre','solicitantes.dni AS solicitante_dni','atencions.*','users.apellido AS personal_nombre', 'users.area AS personal_cargo','solicitantes.domicilio AS solicitante_domicilio','solicitantes.telefono AS solicitante_telefono')
+            ->get();
     }
 
     /**

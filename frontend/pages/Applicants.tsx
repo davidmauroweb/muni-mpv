@@ -33,13 +33,15 @@ export const Applicants: React.FC = () => {
     setSolicitantes(solicitanteData);
   };
 
-  const filtered = solicitantes.filter(s => {
-    const lower = filter.toLowerCase();
-    return s.nombre_apellido.toLowerCase().includes(lower) || 
-           s.dni.includes(lower) ||
-           s.domicilio.toLowerCase().includes(lower) ||
-           (s.telefono && s.telefono.includes(lower));
-  });
+const filtered = filter.trim().length <3 
+  ? [] 
+  : solicitantes.filter(s => {
+      const lower = filter.toLowerCase();
+      return s.nombre_apellido.toLowerCase().includes(lower) || 
+             s.dni.includes(lower) ||
+             s.domicilio.toLowerCase().includes(lower) ||
+             (s.telefono && s.telefono.includes(lower));
+    });
 
   const handleOpenCreate = () => {
     setEditingId(null);
@@ -198,7 +200,9 @@ const viewHistory = async (id: number, name: string) => {
                 ))}
                 {filtered.length === 0 && (
                     <tr>
-                        <td colSpan={4} className="p-10 text-center text-slate-500 font-medium">No se encontraron solicitantes.</td>
+                        <td colSpan={4} className="p-10 text-center text-slate-500 font-medium">
+                            {filter.trim() === '' ? 'Comience a escribir para buscar...' : 'No se encontraron solicitantes.'}
+                        </td>
                     </tr>
                 )}
             </tbody>

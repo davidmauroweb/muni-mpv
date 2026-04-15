@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { StorageService } from '../services/storage';
-import { Solicitante, Atencion } from '../types';
+import { Solicitante, Atencion, UserRole } from '../types';
 import { Search, UserPlus, History, X, Save, Edit3, Trash2, Eye, FileText, User, Calendar, CheckSquare } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import { StatusBadge } from '../components/StatusBadge';
 
 export const Applicants: React.FC = () => {
@@ -11,6 +12,7 @@ export const Applicants: React.FC = () => {
   // Create/Edit Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const { user, logout } = useAuth();
   const [formData, setFormData] = useState({
     nombre_apellido: '', dni: '', domicilio: '', telefono: ''
   });
@@ -128,16 +130,17 @@ const viewHistory = async (id: number, name: string) => {
     <div className="space-y-6">
        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <h1 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Padrón de Solicitantes</h1>
-        <button 
+        {user.rol !== UserRole.ADMIN && (<button
             onClick={handleOpenCreate}
             className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-lg font-bold uppercase tracking-wider text-xs transition-transform hover:scale-105"
         >
             <UserPlus className="w-4 h-4" /> Nuevo Solicitante
         </button>
+        )}
       </div>
 
       <div className="bg-white p-6 rounded-[2rem] shadow-xl border border-slate-200">
-        <div className="relative max-w-md">
+        <div className="relative">
             <Search className="absolute left-4 top-3.5 text-slate-400 w-5 h-5" />
             <input 
                 type="text"

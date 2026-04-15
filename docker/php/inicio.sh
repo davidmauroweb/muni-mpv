@@ -11,7 +11,7 @@ until pg_isready -h db -p 5432 -U user || [ $? -eq 52 ]; do
 done
 
 echo "Ejecutando Laravel setup..."
-php artisan migrate:fresh --seed
+# php artisan migrate:fresh --seed
 php artisan jwt:secret
 
 echo "Iniciando PHP-FPM..."

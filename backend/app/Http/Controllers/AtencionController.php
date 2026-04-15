@@ -83,9 +83,20 @@ class AtencionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(atencion $atencion)
+    public function reporteos(Request $request)
     {
-        //
+            $datos=atencion::whereBetween('fecha', [$request->desde, $request->hasta])
+            ->join('solicitantes', 'solicitantes.id', 'atencions.solicitante_id')
+            ->leftjoin('users','atencions.usuario_asignado_id','users.id')
+            ->select('solicitantes.nombre_apellido AS solicitante_nombre','solicitantes.dni AS solicitante_dni','atencions.*','users.apellido AS personal_nombre', 'users.area AS personal_cargo','solicitantes.domicilio AS solicitante_domicilio','solicitantes.telefono AS solicitante_telefono')
+            ->orderBy('os')
+            ->get();
+        return response()->json([
+            'success' => true,
+            'desde' => $request->desde,
+            'hasta' => $request->hasta,
+            'data' => $datos
+        ], 200);
     }
 
     /**

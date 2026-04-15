@@ -300,40 +300,34 @@ export const AttentionsList: React.FC = () => {
                       </h4>
                       
                       {canEditResolution(selectedAtencion) ? (
-                        
                           <div className="space-y-1">
                             <div className="mb-1">
-
-
-          {!selectedObraSocial ? (
-            <div className="relative">
-                <div className="relative">
-                  <input type="text" className="w-full pl-10 pr-2 py-3 bg-slate-50 border rounded-xl font-medium text-sm" placeholder="Buscar Obra Social" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-                  <Search className="w-5 h-5 text-slate-400 absolute left-3 top-3" />
-                </div>
-                {searchTerm.length > 2 && filteredos.length > 0 &&(
-                  <div className="absolute z-20 w-full mt-1 bg-white border rounded-xl shadow-xl overflow-hidden max-h-60 overflow-y-auto">
-                    {filteredos.map(s => (
-                      <button key={s.codigo} type="button" onClick={() => { setselectedObraSocial(s); setSearchTerm(''); }} className="w-full text-left px-4 py-3 hover:bg-blue-50 border-b last:border-0 transition-colors">
-                        <p className="font-bold text-slate-900 text-sm">{s.nombre}</p>
-                      </button>
-                    ))}
-                  </div>
-                )}
-            </div>
-          ) : (
-            <div className="flex items-center justify-between bg-blue-50 p-2 rounded-xl border border-blue-100">
-              <div className="flex items-center gap-3">
-                <div>
-                  <p className="font-black text-blue-900 text-base">{selectedObraSocial.nombre}</p>
-                </div>
-              </div>
-              <button type="button" onClick={() => setselectedObraSocial(null)} className="px-3 py-1.5 bg-white text-slate-600 rounded-lg font-bold text-[10px] uppercase tracking-wider border hover:bg-slate-50">Cambiar</button>
-            </div>
-          )}
-
-
-
+                          {!selectedObraSocial ? (
+                            <div className="relative">
+                                <div className="relative">
+                                  <input type="text" className="w-full pl-10 pr-2 py-3 bg-slate-50 border rounded-xl font-medium text-sm" placeholder="Buscar Obra Social" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                                  <Search className="w-5 h-5 text-slate-400 absolute left-3 top-3" />
+                                </div>
+                                {searchTerm.length > 2 && filteredos.length > 0 &&(
+                                  <div className="absolute z-20 w-full mt-1 bg-white border rounded-xl shadow-xl overflow-hidden max-h-60 overflow-y-auto">
+                                    {filteredos.map(s => (
+                                      <button key={s.codigo} type="button" onClick={() => { setselectedObraSocial(s); setSearchTerm(''); }} className="w-full text-left px-4 py-3 hover:bg-blue-50 border-b last:border-0 transition-colors">
+                                        <p className="font-bold text-slate-900 text-sm">{s.nombre}</p>
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-between bg-blue-50 p-2 rounded-xl border border-blue-100">
+                              <div className="flex items-center gap-3">
+                                <div>
+                                  <p className="font-black text-blue-900 text-base">{selectedObraSocial.nombre}</p>
+                                </div>
+                              </div>
+                              <button type="button" onClick={() => setselectedObraSocial(null)} className="px-3 py-1.5 bg-white text-slate-600 rounded-lg font-bold text-[10px] uppercase tracking-wider border hover:bg-slate-50">Cambiar</button>
+                            </div>
+                          )}
                             </div>
                               <textarea 
                                 className="w-full border border-slate-300 rounded-2xl p-4 bg-slate-50 focus:ring-4 focus:ring-green-100 focus:border-green-500 h-32 resize-none font-medium text-sm transition-all"

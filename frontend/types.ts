@@ -249,3 +249,8 @@ export const Servicios = {
   '902' : 'Veterinaria',
   '903' : 'Bolson Comida'
 } as const;
+
+export interface ReporteFiltros {
+  desde?: string;
+  hasta?: string;
+}

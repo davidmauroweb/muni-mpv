@@ -1,5 +1,5 @@
 import api from "./api";
-import { Atencion } from "../types";
+import { Atencion, ReporteFiltros } from "../types";
 
 export const fakeAtencionService = {
 
@@ -15,6 +15,11 @@ export const fakeAtencionService = {
 
   async create(data: Partial<Atencion>) {
     const response = await api.post("/atenciones", data);
+    return response.data;
+  },
+
+  async reporteos(data: ReporteFiltros) {
+    const response = await api.post("/reporteos", data);
     return response.data;
   },
 

@@ -5,6 +5,7 @@ import { Layout } from './components/Layout';
 import { Dashboard } from './pages/Dashboard';
 import { NewAttention } from './pages/NewAttention';
 import { AttentionsList } from './pages/AttentionsList';
+import { Reportes } from './pages/Reportes';
 import { Applicants } from './pages/Applicants';
 import { Users } from './pages/Users';
 import { Login } from './pages/Login';
@@ -35,6 +36,10 @@ const AppContent = () => {
         {(user.rol === UserRole.ADMIN) && (
           <Route path="/usuarios" element={<Users />} />
         )}
+
+        {(user.rol === UserRole.ADMIN || user.rol === UserRole.SUPERVISOR) && (
+            <Route path="/reporteos" element={<Reportes />} />
+          )}
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -14,8 +14,8 @@ class AtencionController extends Controller
     public function index()
     {
         return atencion::whereDate('fecha', Carbon::today())
-            ->join('solicitantes', 'solicitantes.id', 'atencions.solicitante_id')
-            ->leftjoin('users','atencions.usuario_asignado_id','users.id')
+            ->join('solicitantes', 'solicitantes.id', '=', 'atencions.solicitante_id')
+            ->leftjoin('users', 'atencions.usuario_asignado_id', '=', 'users.id')
             ->select('solicitantes.nombre_apellido AS solicitante_nombre','solicitantes.dni AS solicitante_dni','atencions.*','users.apellido AS personal_nombre', 'users.area AS personal_cargo','solicitantes.domicilio AS solicitante_domicilio','solicitantes.telefono AS solicitante_telefono')
             ->orderBy('solicitantes.updated_at')
             ->get();
@@ -34,11 +34,12 @@ class AtencionController extends Controller
      */
     public function store(Request $request)
     {
+        try {
         $nuevo = new atencion();
         $nuevo->solicitante_id = $request->solicitante_id;
         $nuevo->usuario_creador_id = auth()->user()->id;
-        $nuevo->usuario_asignado_id = $request->usuario_asignado_id ==""?null: $request->usuario_asignado_id;
-        $nuevo->estado = $request->filled('asignada_a') ? 'en_atencion' : 'registrado';
+        $nuevo->usuario_asignado_id = $request->usuario_asignado_id;
+        $nuevo->estado = $request->filled('usuario_asignado_id') ? 'en_atencion' : 'registrado';
         $nuevo->fecha = Carbon::now()->format('Y-m-d');
         $nuevo->motivo = $request->tipo_tramite;
         $nuevo->descripcion = $request->descripcion;
@@ -48,7 +49,7 @@ class AtencionController extends Controller
         $nuevo->edad = $request->edad;
         $nuevo->sx = $request->sx;
         $nuevo->save();
-        $acargo = User::where('id', $nuevo->usuario_asignado_id)->select('nombre','apellido','rol')->first();
+        $acargo = User::find($nuevo->usuario_asignado_id);
         if(!$acargo){
             $personal = "-";
             $rol = "Sin Asignar";
@@ -79,6 +80,14 @@ class AtencionController extends Controller
             'message' => 'Atención Creada',
             'data' => $datos
         ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error al crear atención: ' . $e->getMessage()
+        ], 500);
+    }
+
         }
 
     /**
@@ -87,8 +96,8 @@ class AtencionController extends Controller
     public function reporteos(Request $request)
     {
             $datos=atencion::whereBetween('fecha', [$request->desde, $request->hasta])
-            ->join('solicitantes', 'solicitantes.id', 'atencions.solicitante_id')
-            ->leftjoin('users','atencions.usuario_asignado_id','users.id')
+            ->join('solicitantes', 'solicitantes.id', '=', 'atencions.solicitante_id')
+            ->leftjoin('users', 'atencions.usuario_asignado_id', '=', 'users.id')
             ->select('solicitantes.nombre_apellido AS solicitante_nombre','solicitantes.dni AS solicitante_dni','atencions.*','users.apellido AS personal_nombre', 'users.area AS personal_cargo','solicitantes.domicilio AS solicitante_domicilio','solicitantes.telefono AS solicitante_telefono')
             ->orderBy('os')
             ->get();
@@ -103,8 +112,8 @@ class AtencionController extends Controller
         public function reporteus(Request $request)
     {
             $datos=atencion::whereDate('fecha', $request->desde)->where('usuario_asignado_id', auth()->user()->id)
-            ->join('solicitantes', 'solicitantes.id', 'atencions.solicitante_id')
-            ->leftjoin('users','atencions.usuario_asignado_id','users.id')
+            ->join('solicitantes', 'solicitantes.id', '=', 'atencions.solicitante_id')
+            ->leftjoin('users', 'atencions.usuario_asignado_id', '=', 'users.id')
             ->select('solicitantes.nombre_apellido AS solicitante_nombre','solicitantes.dni AS solicitante_dni','atencions.*','users.apellido AS personal_nombre', 'users.area AS personal_cargo','solicitantes.domicilio AS solicitante_domicilio','solicitantes.telefono AS solicitante_telefono')
             ->orderBy('solicitantes.updated_at')
             ->get();

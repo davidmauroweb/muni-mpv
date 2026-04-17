@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { fakeAtencionService } from '../services/fakeAtencionService';
 import {CAPS_MAP } from '../types';
 import { ObraSocial } from '../obrasocial';
-import { Search, FileText } from 'lucide-react';
+import * as XLSX from 'xlsx';
+import { Search, FileText, Download } from 'lucide-react';
 export const Reportes: React.FC = () => {
   const [formData, setFormData] = useState({
     fecha_desde: '',
@@ -52,10 +53,35 @@ export const Reportes: React.FC = () => {
       [e.target.name]: e.target.value
     });
   };
+
+const exportToExcel = () => {
+  const data = resultados.map(a => ({
+    'Fecha': new Date(a.created_at).toLocaleDateString(),
+    'N°': a.id,
+    'Obra Social': ObraSocial[a.os||'9999'], 
+    'Solicitante': a.solicitante_nombre,
+    'DNI': a.solicitante_dni,
+    'Sexo': a.sx ? 'Mujer' : 'Hombre',
+    'Edad': a.edad,
+    'Motivo': a.motivo,
+    'Establecimiento': CAPS_MAP[a.caps]?.nombre || '',
+    'Asignado': a.personal_nombre || 'Sin asignar',
+    'Estado': a.estado,
+    'Fecha Atención': a.updated_at ? new Date(a.updated_at).toLocaleDateString() : '',
+    'Resolución': a.resolucion || '',
+  }));
+  
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Atenciones');
+  XLSX.writeFile(wb, `atenciones_${new Date().toISOString().split('T')[0]}.xlsx`);
+};
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <h1 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Reportes de Atenciones</h1>
+        <button onClick={exportToExcel} className="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 shadow-lg font-bold uppercase tracking-wider text-xs transition-transform hover:scale-105">xls</button>
       </div>
       {/* Filtros por fecha */}
       <div className="bg-white p-6 rounded-[2rem] shadow-xl border border-slate-200">

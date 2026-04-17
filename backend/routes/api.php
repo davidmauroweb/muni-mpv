@@ -33,6 +33,7 @@ Route::middleware(['auth:api', 'personal'])->group(function () {
 # MESA DE ENTRADAS actualiza y elimina solicitantes -> incluye funciones de personal
 Route::middleware(['auth:api', 'me'])->group(function () {
     Route::put('/solicitantes/{solicitante}', [SolicitanteController::class, 'update']);
+    Route::post('/atenciones', [AtencionController::class, 'store']);
     Route::delete('/solicitantes/{solicitante}', [SolicitanteController::class, 'destroy']);
 });
 

@@ -5,7 +5,7 @@ import { Atencion, EstadoAtencion, UserRole, CAPS_MAP } from '../types';
 import { StatusBadge } from '../components/StatusBadge';
 import { printVoucher } from '../utils/printer';
 import { ObraSocial } from '../obrasocial';
-import { Search, Printer, Play, CheckSquare, Edit3, X, Eye, FileText, User, Calendar, Save } from 'lucide-react';
+import { Search, Printer, Play, CheckSquare, Edit3, X, Eye, FileText, User, Calendar, Save, Download } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export const AttentionsList: React.FC = () => {
@@ -136,6 +136,7 @@ export const AttentionsList: React.FC = () => {
 
     return false;
   };
+ 
 
   return (
     <div className="space-y-6">

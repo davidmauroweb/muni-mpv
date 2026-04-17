@@ -237,13 +237,14 @@ const handleSubmit = async (e: React.FormEvent) => {
                         value={selectedPersonalId}
                         onChange={e => setSelectedPersonalId(e.target.value)}
                     >
+                      <option key="" value="">... seleccionar</option>
                         {personalList.map(p => <option key={p.id} value={p.id}>{p.nombre} {p.apellido} - {UserArea[p.area as keyof typeof UserArea]}</option>)}
                     </select>
                     {user?.rol === UserRole.PERSONAL && <p className="text-[10px] text-blue-500 font-bold uppercase tracking-widest mt-2 ml-1">Auto-asignado por rol</p>}
                 </div>
                 
                 <div className="mt-4 pt-4 border-t border-slate-100 flex justify-end">
-                   <button type="submit" disabled={!selectedSolicitante || !tipoTramite} className="w-full flex justify-center items-center gap-2 px-4 py-3 bg-blue-900 text-white rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg hover:scale-[1.02] transition-all disabled:opacity-50 disabled:hover:scale-100">
+                   <button type="submit" disabled={!selectedSolicitante || !tipoTramite || !selectedPersonalId} className="w-full flex justify-center items-center gap-2 px-4 py-3 bg-blue-900 text-white rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg hover:scale-[1.02] transition-all disabled:opacity-50 disabled:hover:scale-100">
                      <Printer className="w-4 h-4" /> GUARDAR E IMPRIMIR
                    </button>
                 </div>

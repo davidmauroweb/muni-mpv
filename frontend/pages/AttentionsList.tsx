@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StorageService } from '../services/storage';
+import { listado } from '../services/fakeAtencionService';
 import { Atencion, EstadoAtencion, UserRole, CAPS_MAP } from '../types';
 import { StatusBadge } from '../components/StatusBadge';
 import { printVoucher } from '../utils/printer';
@@ -16,6 +17,8 @@ export const AttentionsList: React.FC = () => {
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [capsFilter, setCapsFilter] = useState<string>('all');
+
+  const [searchDate, setSearchDate] = useState('');
 
   const [selectedObraSocial, setselectedObraSocial] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -88,10 +91,11 @@ export const AttentionsList: React.FC = () => {
       estado: EstadoAtencion.ATENDIDO,
       atencion_dispensada: dispenseText,
       fecha_atencion_dispensada: new Date().toISOString(),
-      os: selectedObraSocial?.codigo
+      os: selectedOs === 9999 ? null : selectedOs
     });
     setIsModalOpen(false);
     refreshData();
+    setselectedObraSocial(null);
   };
 
   const refreshData = async () => {
@@ -99,6 +103,17 @@ export const AttentionsList: React.FC = () => {
     data.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     setAtenciones(data);
   };
+
+  const fetchByDate = async () => {
+  if (!searchDate) return;
+  try {
+    const response = await listado.reporteus({ desde: searchDate });
+    setAtenciones(response.data);
+    setFiltered(response.data);
+  } catch (error) {
+    console.error('Error buscando por fecha:', error);
+  }
+};
 
   const canEditResolution = (atencion: Atencion) => {
     if (!user) return false;
@@ -129,8 +144,34 @@ export const AttentionsList: React.FC = () => {
             <h1 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Listado de Atenciones</h1>
             <p className="text-slate-500 font-medium">Gestione y consulte el historial de atenciones.</p>
         </div>
-      </div>
+        {user.rol !== UserRole.ADMIN && (
+ <div className="flex items-center gap-2">
+          <input 
+            type="date" 
+            className="p-3 bg-white border border-slate-300 rounded-xl font-medium text-sm"
+            value={searchDate}
+            onChange={e => setSearchDate(e.target.value)}
+          />
+          <button 
+            onClick={() => fetchByDate()}
+            className="px-4 py-3 bg-blue-700 text-white rounded-xl font-bold text-xs uppercase tracking-wider"
+          >
+            Buscar
+          </button>
+          {searchDate && (
+            <button 
+              onClick={() => { setSearchDate(''); refreshData(); }}
+              className="px-4 py-3 bg-slate-200 text-slate-600 rounded-xl font-bold text-xs uppercase tracking-wider"
+            >
+              Limpiar
+            </button>
+          )}
+        </div>
+          )
+        }
+       
 
+      </div>
       {/* Filters */}
       <div className="bg-white p-6 rounded-[2rem] shadow-xl border border-slate-200 flex flex-col md:flex-row gap-4">
         <div className="relative flex-1">
@@ -311,7 +352,7 @@ export const AttentionsList: React.FC = () => {
                                 {searchTerm.length > 2 && filteredos.length > 0 &&(
                                   <div className="absolute z-20 w-full mt-1 bg-white border rounded-xl shadow-xl overflow-hidden max-h-60 overflow-y-auto">
                                     {filteredos.map(s => (
-                                      <button key={s.codigo} type="button" onClick={() => { setselectedObraSocial(s); setSearchTerm(''); }} className="w-full text-left px-4 py-3 hover:bg-blue-50 border-b last:border-0 transition-colors">
+                                      <button key={s.codigo} type="button" onClick={() => { setselectedObraSocial(s); setSelectedOs(s.codigo); setSearchTerm(''); }} className="w-full text-left px-4 py-3 hover:bg-blue-50 border-b last:border-0 transition-colors">
                                         <p className="font-bold text-slate-900 text-sm">{s.nombre}</p>
                                       </button>
                                     ))}

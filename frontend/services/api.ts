@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:8000/api", 
+//baseURL: "http://190.189.33.166:24320/api", // Testing Muni
+  baseURL: "http://localhost:8000/api", // desarrollo local
   headers: {
     "Content-Type": "application/json"
   }

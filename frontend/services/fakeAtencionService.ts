@@ -27,5 +27,11 @@ export const fakeAtencionService = {
     const response = await api.put(`/atenciones/${id}`, updates);
     return response.data;
   }
-
 };
+
+export const listado = {
+  async reporteus(data: ReporteFiltros) {
+    const response = await api.post("/reporteus", data);
+    return response.data;
+  },
+}

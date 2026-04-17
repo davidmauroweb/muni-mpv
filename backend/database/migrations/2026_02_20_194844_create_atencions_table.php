@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('solicitante_id')->constrained(table: 'solicitantes', indexName: 'id');
             $table->foreignId('usuario_creador_id')->references('id')->on('users');
-            $table->foreignId('usuario_asignado_id')->references('id')->on('users')->nullable();
+            $table->foreignId('usuario_asignado_id')->nullable();
             $table->string('estado');
             $table->boolean('sx'); // 0: Hombre - 1: Mujer
             $table->string('edad'); // 0: -1, 1: 1a4, 2: 5a9, 3: 10a14, 4:15a19, 5:20a34, 6:35a49, 7:50a64, 8:65+

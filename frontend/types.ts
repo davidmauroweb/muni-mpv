@@ -109,7 +109,7 @@ export interface Atencion {
   
   usuario_creador_id: string; // User ID
   creada_por_nombre: string;
-  usuario_asignado_id: string | null; // User ID
+  usuario_asignado_id: number | null; // User ID
   asignada_a_nombre: string | null;
   
   // Personnel fields

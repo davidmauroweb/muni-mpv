@@ -17,6 +17,7 @@ class AtencionController extends Controller
             ->join('solicitantes', 'solicitantes.id', 'atencions.solicitante_id')
             ->leftjoin('users','atencions.usuario_asignado_id','users.id')
             ->select('solicitantes.nombre_apellido AS solicitante_nombre','solicitantes.dni AS solicitante_dni','atencions.*','users.apellido AS personal_nombre', 'users.area AS personal_cargo','solicitantes.domicilio AS solicitante_domicilio','solicitantes.telefono AS solicitante_telefono')
+            ->orderBy('solicitantes.updated_at')
             ->get();
     }
 
@@ -99,6 +100,21 @@ class AtencionController extends Controller
         ], 200);
     }
 
+        public function reporteus(Request $request)
+    {
+            $datos=atencion::whereDate('fecha', $request->desde)->where('usuario_asignado_id', auth()->user()->id)
+            ->join('solicitantes', 'solicitantes.id', 'atencions.solicitante_id')
+            ->leftjoin('users','atencions.usuario_asignado_id','users.id')
+            ->select('solicitantes.nombre_apellido AS solicitante_nombre','solicitantes.dni AS solicitante_dni','atencions.*','users.apellido AS personal_nombre', 'users.area AS personal_cargo','solicitantes.domicilio AS solicitante_domicilio','solicitantes.telefono AS solicitante_telefono')
+            ->orderBy('solicitantes.updated_at')
+            ->get();
+        return response()->json([
+            'success' => true,
+            'desde' => $request->desde,
+            'data' => $datos
+        ], 200);
+    }
+
     /**
      * Show the form for editing the specified resource.
      */
@@ -118,7 +134,7 @@ class AtencionController extends Controller
         $update->estado = $request->estado;
         $update->os = $request->os;
         $update->resolucion = $request->atencion_dispensada;
-        if ($usrol == 'SUPERVISOR' || $usrol == 'MESA_ENTRADAS' || $usid == $update->usuario_asignado_id ){
+        if ($usrol == 'SUPERVISOR' || $usrol == 'MESA_ENTRADAS' || $usid == $update->usuario_asignado_id){
             $update->save();
             $ss = true;
             $msj = 'Atención Dispensada';

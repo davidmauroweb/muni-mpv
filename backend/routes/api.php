@@ -24,6 +24,7 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
 });
 # PERSONAL solo crea solicitantes y atenciones
 Route::middleware(['auth:api', 'personal'])->group(function () {
+    Route::post('/reporteus', [AtencionController::class, 'reporteus']);
     Route::post('/solicitantes', [SolicitanteController::class, 'store']);
     Route::post('/atenciones', [AtencionController::class, 'store']);
     Route::put('/atenciones/{atencion}', [AtencionController::class, 'update']);

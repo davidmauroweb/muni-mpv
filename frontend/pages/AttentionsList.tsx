@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StorageService } from '../services/storage';
 import { listado } from '../services/fakeAtencionService';
 import { Atencion, EstadoAtencion, UserRole, CAPS_MAP } from '../types';
+import { NOMENCLADOR_PR, NOMENCLADOR_TI } from '../nomenclador';
 import { StatusBadge } from '../components/StatusBadge';
 import { printVoucher } from '../utils/printer';
 import { ObraSocial } from '../obrasocial';
@@ -36,6 +37,8 @@ export const AttentionsList: React.FC = () => {
   const [dispenseText, setDispenseText] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOs, setSelectedOs] = useState<number>(9999);
+  const [selectedNomencladorPR, setSelectedNomencladorPR] = useState('');
+  const [selectedNomencladorTI, setSelectedNomencladorTI] = useState('');
 
   useEffect(() => {
     refreshData();
@@ -98,6 +101,13 @@ export const AttentionsList: React.FC = () => {
     setselectedObraSocial(null);
   };
 
+  const addNomencladorPrefix = (code: string, label: string) => {
+  const prefix = `${code}: ${label}\n`;
+  if (!dispenseText.includes(prefix)) {
+    setDispenseText(prev => prefix + prev);
+    }
+  };
+
   const refreshData = async () => {
     const data = await StorageService.getAtenciones();
     data.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
@@ -122,11 +132,13 @@ export const AttentionsList: React.FC = () => {
     if (user.rol === UserRole.ADMIN) return true;
 
     // SUPERVISOR: Can edit any resolution, even if saved
-    if (user.rol === UserRole.SUPERVISOR) return true;
+    if (user.rol === UserRole.SUPERVISOR) {
+      return atencion.estado !== EstadoAtencion.ATENDIDO;
+    }
 
     // MESA_ENTRADAS: Can edit any resolution, but NOT if already saved (status ATENDIDO)
     if (user.rol === UserRole.MESA_ENTRADAS) {
-        return atencion.estado !== EstadoAtencion.ATENDIDO;
+      return atencion.estado !== EstadoAtencion.ATENDIDO;
     }
 
     // PERSONAL: Can edit only assigned resolutions, but NOT if already saved (status ATENDIDO)
@@ -343,6 +355,7 @@ export const AttentionsList: React.FC = () => {
                       
                       {canEditResolution(selectedAtencion) ? (
                           <div className="space-y-1">
+{(user?.area == '2' || user?.area == '3') && (
                             <div className="mb-1">
                           {!selectedObraSocial ? (
                             <div className="relative">
@@ -371,6 +384,47 @@ export const AttentionsList: React.FC = () => {
                             </div>
                           )}
                             </div>
+)}
+ {user?.area !== '2' && (                           
+                      <div className="flex gap-3 mb-3">
+                        
+                        <div className="flex-1">                          
+                          <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Problemática</label>
+                          <select disabled={user?.area === '2'}
+                            className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl font-medium text-xs"
+                            value={selectedNomencladorPR}
+                            onChange={e => {
+                              const selected = NOMENCLADOR_PR.find(n => n.code === e.target.value);
+                              setSelectedNomencladorPR(e.target.value);
+                              if (selected) addNomencladorPrefix(selected.code, selected.label);
+                            }}
+                          >
+                            <option value="">Seleccionar...</option>
+                            {NOMENCLADOR_PR.map(n => (
+                              <option key={n.code} value={n.code}>{n.code} - {n.label}</option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div className="flex-1">
+                          <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Tipo de Intervención</label>
+                          <select disabled={user?.area === '2'}
+                            className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl font-medium text-xs"
+                            value={selectedNomencladorTI}
+                            onChange={e => {
+                              const selected = NOMENCLADOR_TI.find(n => n.code === e.target.value);
+                              setSelectedNomencladorTI(e.target.value);
+                              if (selected) addNomencladorPrefix(selected.code, selected.label);
+                            }}
+                          >
+                            <option value="">Seleccionar...</option>
+                            {NOMENCLADOR_TI.map(n => (
+                              <option key={n.code} value={n.code}>{n.code} - {n.label}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+ )}
                               <textarea 
                                 className="w-full border border-slate-300 rounded-2xl p-4 bg-slate-50 focus:ring-4 focus:ring-green-100 focus:border-green-500 h-32 resize-none font-medium text-sm transition-all"
                                 value={dispenseText}

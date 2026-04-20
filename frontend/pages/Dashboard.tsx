@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Download, Printer, ArrowRight, AlertTriangle, Clock, TrendingUp, Users as UsersIcon, Building2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { StorageService } from '../services/storage';
-import { Atencion, EstadoAtencion, Stats } from '../types';
+import { Atencion, EstadoAtencion, Stats, UserRole } from '../types';
 import { StatusBadge } from '../components/StatusBadge';
 import { printVoucher } from '../utils/printer';
+import { useAuth } from '../context/AuthContext';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, 
   AreaChart, Area, PieChart, Pie, Legend 
@@ -15,6 +16,7 @@ export const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<Stats>({ hoy: 0, registradas: 0, enAtencion: 0, atendidas: 0, tmr_minutos: 0 });
   const [hourlyData, setHourlyData] = useState<any[]>([]);
   const [areaData, setAreaData] = useState<any[]>([]);
+  const { user } = useAuth();
   const [criticalCases, setCriticalCases] = useState<Atencion[]>([]);
 
   const [data, setData] = useState([]);
@@ -87,8 +89,13 @@ export const Dashboard: React.FC = () => {
   
       setCriticalCases(critical.slice(0, 3));
   
+      let filteredData = [...data];
+      // Si el rol es PERSONAL, filtrar solo las atenciones asignadas al usuario
+      if (user?.rol === UserRole.PERSONAL) {
+        filteredData = data.filter(a => a.usuario_asignado_id === Number(user.id));
+      }
       setAtenciones(
-        [...data]
+        filteredData
           .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
           .slice(0, 5)
       );
@@ -256,7 +263,7 @@ export const Dashboard: React.FC = () => {
                 </div>
                 <div className="flex gap-2">
                     <button onClick={() => printVoucher(atencion)} className="p-2 text-slate-400 hover:text-blue-600 transition-colors"><Printer className="w-4 h-4" /></button>
-                    {atencion.estado === EstadoAtencion.REGISTRADO && (
+                    {(atencion.estado === EstadoAtencion.REGISTRADO && user?.rol != UserRole.ADMIN )&& (
                        <button onClick={() => handleStatusChange(atencion.id)} className="px-3 py-1 bg-blue-100 text-blue-700 text-[10px] font-black rounded-lg uppercase tracking-widest hover:bg-blue-200 transition-colors">Iniciar</button>
                     )}
                 </div>

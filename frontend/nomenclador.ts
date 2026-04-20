@@ -1,0 +1,32 @@
+export const NOMENCLADOR_TI = [
+  { code: 'TI01', label: 'Entrevista inicial (primer contacto, diagnóstico preliminar)' },
+  { code: 'TI02', label: 'Entrevista de seguimiento' },
+  { code: 'TI03', label: 'Visita domiciliaria' },
+  { code: 'TI04', label: 'Informe social (técnico / socioeconómico)' },
+  { code: 'TI05', label: 'Gestión de recursos (alimentos, subsidios, etc.)' },
+  { code: 'TI06', label: 'Articulación institucional (escuela, salud, justicia)' },
+  { code: 'TI07', label: 'Derivación (con o sin seguimiento)' },
+  { code: 'TI08', label: 'Acompañamiento (presencial o remoto)' },
+  { code: 'TI09', label: 'Intervención en crisis' },
+  { code: 'TI10', label: 'Taller / actividad grupal' },
+  { code: 'TI11', label: 'Mediación / intervención familiar' },
+  { code: 'TI12', label: 'Supervisión de casos' },
+  { code: 'TI13', label: 'Registro / actualización de legajo' },
+];
+
+export const NOMENCLADOR_PR = [
+  { code: 'PR01', label: 'Vulnerabilidad socioeconómica' },
+  { code: 'PR02', label: 'Violencia familiar / de género' },
+  { code: 'PR03', label: 'Niñez y adolescencia en riesgo' },
+  { code: 'PR04', label: 'Adultos mayores' },
+  { code: 'PR05', label: 'Discapacidad' },
+  { code: 'PR06', label: 'Salud mental' },
+  { code: 'PR07', label: 'Consumos problemáticos' },
+  { code: 'PR08', label: 'Situación habitacional' },
+  { code: 'PR09', label: 'Desempleo / inserción laboral' },
+  { code: 'PR10', label: 'Educación (abandono, ausentismo)' },
+  { code: 'PR11', label: 'Problemáticas judicializadas' },
+  { code: 'PR12', label: 'Emergencia social' },
+  { code: 'PR13', label: 'Problemática de Salud' },
+  { code: 'PR14', label: 'Situación de Calle' },
+];

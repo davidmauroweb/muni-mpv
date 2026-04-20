@@ -43,19 +43,26 @@ export const NewAttention: React.FC = () => {
   const [showCreateSolicitante, setShowCreateSolicitante] = useState(false);
 
   useEffect(() => {
-    const fetchPersonal = async () => {
+    if (!user || user.rol === UserRole.ADMIN) return;
+    let cancelled = false;
+    (async () => {
       try {
-        const data = await fakeUserService.getPersonalActivo();
-        setPersonalList(data.filter((u: User) => u.activo === true));
-      } catch (error) {
-        console.error("Error cargando personal:", error);
-        setPersonalList([]); 
+        const list = await fakeUserService.getPersonalActivo();
+        if (!cancelled && Array.isArray(list)) {
+          setPersonalList(list);
+        }
+      } catch {
+        if (!cancelled) setPersonalList([]);
       }
+    })();
+    return () => {
+      cancelled = true;
     };
-  
-    fetchPersonal();
-    if (user?.rol === UserRole.PERSONAL) {
-        setSelectedPersonalId(user.id);
+  }, [user]);
+
+  useEffect(() => {
+    if (user?.rol === UserRole.PERSONAL && user.id != null && user.id !== '') {
+      setSelectedPersonalId(String(user.id));
     }
   }, [user]);
 
@@ -84,7 +91,9 @@ const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedSolicitante || !user) return;
 
-    const personal = personalList.find(p => p.id === selectedPersonalId);
+    const personal =
+      personalList.find(p => String(p.id) === String(selectedPersonalId)) ??
+      (user.rol === UserRole.PERSONAL && String(user.id) === String(selectedPersonalId) ? user : undefined);
     setLoading(true); 
 
         const res = await fakeAtencionService.create({
@@ -237,8 +246,20 @@ const handleSubmit = async (e: React.FormEvent) => {
                         value={selectedPersonalId}
                         onChange={e => setSelectedPersonalId(e.target.value)}
                     >
-                      <option key="" value="">... seleccionar</option>
-                        {personalList.map(p => <option key={p.id} value={p.id}>{p.nombre} {p.apellido} - {UserArea[p.area as keyof typeof UserArea]}</option>)}
+                      <option value="">... seleccionar</option>
+                        {personalList.map(p => (
+                          <option key={String(p.id)} value={String(p.id)}>
+                            {p.nombre} {p.apellido} - {UserArea[p.area as keyof typeof UserArea]}
+                          </option>
+                        ))}
+                        {user?.rol === UserRole.PERSONAL &&
+                          user.id != null &&
+                          user.id !== '' &&
+                          !personalList.some(p => String(p.id) === String(user.id)) && (
+                            <option value={String(user.id)}>
+                              {user.nombre} {user.apellido} - {UserArea[user.area as keyof typeof UserArea]}
+                            </option>
+                          )}
                     </select>
                     {user?.rol === UserRole.PERSONAL && <p className="text-[10px] text-blue-500 font-bold uppercase tracking-widest mt-2 ml-1">Auto-asignado por rol</p>}
                 </div>

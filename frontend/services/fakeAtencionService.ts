@@ -26,7 +26,12 @@ export const fakeAtencionService = {
   async update(id: string, updates: Partial<Atencion>) {
     const response = await api.put(`/atenciones/${id}`, updates);
     return response.data;
-  }
+  },
+
+  async delete(id: number) {
+  const response = await api.delete(`/atenciones/${id}`);
+  return response.data;
+}
 };
 
 export const listado = {

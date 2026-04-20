@@ -165,6 +165,9 @@ class AtencionController extends Controller
      */
     public function destroy(atencion $atencion)
     {
-        //
+        $atencion->delete();
+        return response()->json([
+            'message' => 'Atención eliminada correctamente'
+        ], 200);
     }
 }

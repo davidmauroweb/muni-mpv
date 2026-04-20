@@ -82,6 +82,7 @@ const exportToExcel = () => {
 };
 
 const handleDelete = async (id: number) => {
+  if (!confirm('¿Eliminar el registro?')) return;
   try {
     await fakeAtencionService.delete(id);
     handleGenerarReporte();

@@ -138,7 +138,7 @@ export const AttentionsList: React.FC = () => {
 
     // MESA_ENTRADAS: Can edit any resolution, but NOT if already saved (status ATENDIDO)
     if (user.rol === UserRole.MESA_ENTRADAS) {
-      return atencion.estado !== EstadoAtencion.ATENDIDO;
+      return user.id === atencion.usuario_asignado_id && atencion.estado !== EstadoAtencion.ATENDIDO;
     }
 
     // PERSONAL: Can edit only assigned resolutions, but NOT if already saved (status ATENDIDO)

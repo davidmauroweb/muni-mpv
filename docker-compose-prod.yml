@@ -51,5 +51,4 @@ services:
       - frontend
 
 volumes:
-  dbdata:
   frontend_static: # <--- Hay que declararlo aquí abajo

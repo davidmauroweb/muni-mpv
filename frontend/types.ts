@@ -19,15 +19,15 @@ export const UserArea = {
 } as const;
 
 export const Edades = {
-  0 : 'Menos de 1 año',
-  1 : 'De 1 a 4 años',
-  2 : 'De 5 a 9 años',
-  3 : 'De 10 a 14 años',
-  4 : 'De 15 a 19 años',
-  5 : 'De 20 a 34 años',
-  6 : 'De 35 a 49 años',
-  7 : 'De 50 a 64 años',
-  8 : 'Mas de 65 años'
+  0 : '< de 1',
+  1 : '1 a 4',
+  2 : '5 a 9',
+  3 : '10 a 14',
+  4 : '15 a 19',
+  5 : '20 a 34',
+  6 : '35 a 49',
+  7 : '50 a 64',
+  8 : '65 y +'
 } as const;
 
 export enum EstadoAtencion {

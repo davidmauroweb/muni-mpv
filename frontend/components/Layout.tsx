@@ -58,6 +58,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               {(user.rol !== UserRole.ADMIN) && <NavItem to="/atenciones" icon={FileText} label="Atenciones" />}
               {(user.rol !== UserRole.ADMIN) && <NavItem to="/solicitantes" icon={Users} label="Solicitantes" />}
               {(user.rol === UserRole.SUPERVISOR || user.rol === UserRole.ADMIN) && <NavItem to="/reporteos" icon={X} label="Reportes" />}
+              {(user.rol === UserRole.SUPERVISOR || user.rol === UserRole.ADMIN) && <NavItem to="/planillas" icon={X} label="Planillas" />}
               {(user.rol === UserRole.ADMIN) && <NavItem to="/usuarios" icon={ShieldAlert} label="Usuarios" />}
             </nav>
 

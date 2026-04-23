@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\{atencion,User};
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class AtencionController extends Controller
 {
@@ -82,13 +83,18 @@ class AtencionController extends Controller
         ], 200);
 
     } catch (\Exception $e) {
+        Log::info('INTENTO FALLIDO - AtencionController@store', [
+            'usuario_id' => auth()->user()->id,
+            'request' => $request->all(),
+            'error' => $e->getMessage(),
+            'timestamp' => Carbon::now()->toDateTimeString()
+        ]);
         return response()->json([
             'success' => false,
             'message' => 'Error al crear atención: ' . $e->getMessage()
         ], 500);
     }
-
-        }
+    }
 
     /**
      * Display the specified resource.
@@ -170,4 +176,46 @@ class AtencionController extends Controller
             'message' => 'Atención eliminada correctamente'
         ], 200);
     }
+
+    public function cubo($m, $y, $c = null)
+    {
+    
+        try {$query = atencion::query()
+        ->whereYear('fecha', $y)
+        ->whereMonth('fecha', $m)
+        ->where('estado', 'atendido');
+        if (!is_null($c) && $c !== '') {
+            $query->where('caps', $c);
+        }
+       $atenciones = $query->selectRaw('servicio, edad, sx, os, COUNT(id) as cantidad')
+        ->groupBy('servicio', 'edad', 'sx','os')
+        ->get()
+        ->groupBy('servicio')
+        ->map(function ($items, $servicio) {
+            $totalHombres = $items->where('sx', 0)->sum('cantidad');
+            $totalMujeres = $items->where('sx', 1)->sum('cantidad');
+            $totalOs = $items->where('os','!=', '')->sum('cantidad');
+            $totalSOs = $totalHombres+$totalMujeres-$totalOs;
+            
+            return [
+                'servicio' => $servicio,
+                'atenciones' => $items->map(fn($item) => [
+                    'sx' => $item->sx,
+                    'edad' => $item->edad,
+                    'cantidad' => $item->cantidad
+                ])->values(),
+                'total_hombres' => $totalHombres,
+                'total_mujeres' => $totalMujeres,
+                'total_obrasocial' => $totalOs,
+                'total_sin_obrasocial' => $totalSOs
+            ];
+        })
+        ->values();
+        return response()->json([
+            'data' => $atenciones
+        ], 200);} catch (\Exception $e) {
+             Log::info( $e->getMessage());
+        }
+    }
 }
+

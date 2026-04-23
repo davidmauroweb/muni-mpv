@@ -39,6 +39,7 @@ Route::middleware(['auth:api', 'me'])->group(function () {
 
 # SUPERVISOR actualiza atenciones -> incluye funciones de mesa de entradas que, también, cumple funciones de personal.
 Route::middleware(['auth:api', 'super'])->group(function () {
+    Route::get('/atenciones/cubo/{m}/{y}/{c?}', [AtencionController::class, 'cubo']);
     Route::post('/reporteos', [AtencionController::class, 'reporteos']);
 });
 ?>

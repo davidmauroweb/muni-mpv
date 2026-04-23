@@ -39,4 +39,9 @@ export const listado = {
     const response = await api.post("/reporteus", data);
     return response.data;
   },
+  async cubo(m: number, y: number, c: number | null = null) {
+    const p = c ? `/${c}` : '';
+    const response = await api.get(`/atenciones/cubo/${m}/${y}${p}`);
+    return response.data;
+  }
 }

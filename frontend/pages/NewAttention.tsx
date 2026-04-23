@@ -197,7 +197,8 @@ const handleSubmit = async (e: React.FormEvent) => {
             </div>
           )}
           <div className="flex justify-between my-1">
-            <select className="w-2/5 mx-1 p-3 bg-slate-50 border rounded-xl font-medium text-sm" name="edad" disabled={!selectedSolicitante} value={edad} onChange={(e) => setEdad(e.target.value)}>
+            <select className="w-2/5 mx-1 p-3 bg-slate-50 border rounded-xl font-medium text-sm" name="edad" disabled={!selectedSolicitante} value={edad} onChange={(e) => setEdad(e.target.value)} required>
+              <option value="">... Seleccionar edad</option>
               {Object.entries(Edades).map(([key, value]) => (
                 <option key={key} value={value}>
                   {value}

@@ -38,6 +38,7 @@ export const Planillas: React.FC = () => {
   const [selectedServicios, setSelectedServicios] = useState<string[]>([]);
 
 
+
   const fetchCubo = async () => {
     setLoading(true);
     setError('');
@@ -82,9 +83,29 @@ export const Planillas: React.FC = () => {
     return nombre ? `${code} - ${nombre}` : code;
   };
 
+  const selectedData = useMemo(
+    () => data.filter((d) => selectedServicios.includes(String(d.servicio))),
+    [data, selectedServicios]
+  );
+
+  const totalesSeleccionados = useMemo(() => {
+    const totalesPorEdad = Object.values(Edades).map((edad) => ({
+      edad,
+      hombres: selectedData.reduce((sum, d) => sum + getCantidad(d.servicio, edad, true), 0),
+      mujeres: selectedData.reduce((sum, d) => sum + getCantidad(d.servicio, edad, false), 0)
+    }));
+
+    return {
+      porEdad: totalesPorEdad,
+      totalHombres: selectedData.reduce((sum, d) => sum + d.total_hombres, 0),
+      totalMujeres: selectedData.reduce((sum, d) => sum + d.total_mujeres, 0),
+      totalObraSocial: selectedData.reduce((sum, d) => sum + d.total_obrasocial, 0),
+      totalSinObraSocial: selectedData.reduce((sum, d) => sum + d.total_sin_obrasocial, 0)
+    };
+  }, [selectedData, getCantidad]);
+
 const exportToExcel = () => {
   if (data.length === 0) return;
-  const selectedData = data.filter((d) => selectedServicios.includes(String(d.servicio)));
   if (selectedData.length === 0) return;
   const edadCount = Object.keys(Edades).length;  // = 9
   const totalColStart = 1 + edadCount * 2;    // = 1 + 18 = 19 (columna H del TOTAL)
@@ -120,15 +141,11 @@ const exportToExcel = () => {
   // 5. Fila de totales
   const totalesRow = [
     'TOTAL',
-    ...Object.values(Edades).flatMap((edad) => {
-      const totalH = selectedData.reduce((sum, d) => sum + getCantidad(d.servicio, edad, true), 0);
-      const totalM = selectedData.reduce((sum, d) => sum + getCantidad(d.servicio, edad, false), 0);
-      return [totalH, totalM];
-    }),
-    selectedData.reduce((sum, d) => sum + d.total_hombres, 0),
-    selectedData.reduce((sum, d) => sum + d.total_mujeres, 0),
-    selectedData.reduce((sum, d) => sum + d.total_obrasocial, 0),
-    selectedData.reduce((sum, d) => sum + d.total_sin_obrasocial, 0)
+    ...totalesSeleccionados.porEdad.flatMap((total) => [total.hombres, total.mujeres]),
+    totalesSeleccionados.totalHombres,
+    totalesSeleccionados.totalMujeres,
+    totalesSeleccionados.totalObraSocial,
+    totalesSeleccionados.totalSinObraSocial
   ];
   // 6. Crear sheet
   const ws = XLSX.utils.aoa_to_sheet([rowEdadLabel, rowHM, ...rows, totalesRow]);
@@ -176,6 +193,7 @@ ws['!merges'] = [
     setSelectedServicios(checked ? data.map((d) => String(d.servicio)) : []);
   };
 
+  
   return (
     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col md:flex-row md:items-end gap-3 justify-between">
@@ -275,29 +293,45 @@ ws['!merges'] = [
                 </td>
               </tr>
             ) : (
-              data.map((d) => (
-                <tr key={d.servicio} className="border-t border-slate-100">
-                  <td className="p-3 text-center">
-                    <input
-                      type="checkbox"
-                      checked={selectedServicios.includes(String(d.servicio))}
-                      onChange={() => toggleServicio(String(d.servicio))}
-                      aria-label={`Seleccionar servicio ${formatServicio(d.servicio)}`}
-                    />
-                  </td>
-                  <td className="p-3 font-bold text-slate-800">{formatServicio(d.servicio)}</td>
-                  {Object.values(Edades).map((edad) => (
-                    <React.Fragment key={`${d.servicio}-${edad}`}>
-                      <td className="p-3 text-center">{getCantidad(d.servicio, edad, false)}</td>
-                      <td className="p-3 text-center">{getCantidad(d.servicio, edad, true)}</td>
+              <>
+                {data.map((d) => (
+                  <tr key={d.servicio} className="border-t border-slate-100">
+                    <td className="p-3 text-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedServicios.includes(String(d.servicio))}
+                        onChange={() => toggleServicio(String(d.servicio))}
+                        aria-label={`Seleccionar servicio ${formatServicio(d.servicio)}`}
+                      />
+                    </td>
+                    <td className="p-3 font-bold text-slate-800">{formatServicio(d.servicio)}</td>
+                    {Object.values(Edades).map((edad) => (
+                      <React.Fragment key={`${d.servicio}-${edad}`}>
+                        <td className="p-3 text-center">{getCantidad(d.servicio, edad, false)}</td>
+                        <td className="p-3 text-center">{getCantidad(d.servicio, edad, true)}</td>
+                      </React.Fragment>
+                    ))}
+                    <td className="p-3 text-center font-bold">{d.total_hombres}</td>
+                    <td className="p-3 text-center font-bold">{d.total_mujeres}</td>
+                    <td className="p-3 text-center font-bold">{d.total_obrasocial}</td>
+                    <td className="p-3 text-center font-bold">{d.total_sin_obrasocial}</td>
+                  </tr>
+                ))}
+                <tr className="border-t-2 border-slate-300 bg-slate-50">
+                  <td className="p-3"></td>
+                  <td className="p-3 font-black uppercase text-slate-900">Total seleccionados</td>
+                  {totalesSeleccionados.porEdad.map((total) => (
+                    <React.Fragment key={`total-${total.edad}`}>
+                      <td className="p-3 text-center font-black">{total.mujeres}</td>
+                      <td className="p-3 text-center font-black">{total.hombres}</td>
                     </React.Fragment>
                   ))}
-                  <td className="p-3 text-center font-bold">{d.total_hombres}</td>
-                  <td className="p-3 text-center font-bold">{d.total_mujeres}</td>
-                  <td className="p-3 text-center font-bold">{d.total_obrasocial}</td>
-                  <td className="p-3 text-center font-bold">{d.total_sin_obrasocial}</td>
+                  <td className="p-3 text-center font-black">{totalesSeleccionados.totalHombres}</td>
+                  <td className="p-3 text-center font-black">{totalesSeleccionados.totalMujeres}</td>
+                  <td className="p-3 text-center font-black">{totalesSeleccionados.totalObraSocial}</td>
+                  <td className="p-3 text-center font-black">{totalesSeleccionados.totalSinObraSocial}</td>
                 </tr>
-              ))
+              </>
             )}
           </tbody>
         </table>

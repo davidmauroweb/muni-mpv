@@ -49,19 +49,5 @@ class DatabaseSeeder extends Seeder
             'created_at' => '2026/02/21',
             'updated_at' => '2026/02/21',
             ]);
-        atencion::insert([
-            'solicitante_id' => 1,
-            'usuario_creador_id' => 1,
-            'usuario_asignado_id' => 1,
-            'estado' => 'ASIGNADO',
-            'sx' => FALSE,
-            'edad' => 'De 35 a 49 años',
-            'descripcion' => 'desc',
-            'fecha' => '2026/02/21',
-            'motivo' => 'Motivo Prueba',
-            'resolucion' => 'Resolucion prueba',
-            'created_at' => '2026/02/21',
-            'updated_at' => '2026/02/21',
-            ]);
     }
 }

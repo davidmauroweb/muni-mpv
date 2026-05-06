@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('apellido');
             $table->string('password');
             $table->boolean('activo');
-            $table->enum('rol', ['ADMIN', 'SUPERVISOR', 'MESA_ENTRADAS', 'PERSONAL']);
+            $table->enum('rol', ['ADMIN', 'SUPER_SO', 'SUPER_SA', 'MESA_ENTRADAS', 'PERSONAL']);
             $table->string('area');
             $table->rememberToken();
             $table->timestamps();

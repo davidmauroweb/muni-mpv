@@ -1,21 +1,22 @@
 
 export enum UserRole {
-  ADMIN = 'ADMIN',
-  SUPERVISOR = 'SUPERVISOR',
-  MESA_ENTRADAS = 'MESA_ENTRADAS',
-  PERSONAL = 'PERSONAL'
+  ADMIN = 'Administrador',
+  SUPER_SO = 'Sup Social',
+  SUPER_SA = 'Sup Salud',
+  MESA_ENTRADAS = 'Mesa de Entradas',
+  PERSONAL = 'Personal'
 }
 
 export const UserArea = {
-  0 : 'Social',
-  1 : 'Gestión',
-  2 : 'Salud',
-  3 : 'Mesa de entradas',
-  4 : 'Tercera edad',
-  5 : 'Inclusión',
-  6 : 'Niñez',
-  7 : 'Administración',
-  8 : 'Atención primaria'
+  0 : 'Social', // Social
+  1 : 'Niñez', // Social
+  2 : 'Inclusión', // Social
+  3 : 'Mesa de entradas', // Social
+  4 : 'Tercera edad', //Social
+  5 : 'Salud', // Salud
+  6 : 'Gestión', // Salud
+  7 : 'Administración', // Salud
+  8 : 'Atención primaria' // Salud
 } as const;
 
 export const Edades = {

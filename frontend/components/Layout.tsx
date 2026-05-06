@@ -50,18 +50,18 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
             <nav className="hidden md:flex items-center gap-1 bg-blue-950/30 p-1 rounded-2xl overflow-x-auto no-scrollbar">
               <NavItem to="/" icon={LayoutDashboard} label="Panel" />
-              {(user.rol !== UserRole.ADMIN) && <NavItem to="/nueva-atencion" icon={PlusCircle} label="Nueva Atención" />}
-              {(user.rol !== UserRole.ADMIN) && <NavItem to="/atenciones" icon={FileText} label="Atenciones" />}
-              {(user.rol !== UserRole.ADMIN) && <NavItem to="/solicitantes" icon={Users} label="Solicitantes" />}
-              {(user.rol === UserRole.SUPERVISOR || user.rol === UserRole.ADMIN) && <NavItem to="/reporteos" icon={X} label="Reportes" />}
-              {(user.rol === UserRole.SUPERVISOR || user.rol === UserRole.ADMIN) && <NavItem to="/planillas" icon={X} label="Planillas" />}
-              {(user.rol === UserRole.ADMIN) && <NavItem to="/usuarios" icon={ShieldAlert} label="Usuarios" />}
+              {(user.rol !== 'ADMIN') && <NavItem to="/nueva-atencion" icon={PlusCircle} label="Nueva Atención" />}
+              {(user.rol !== 'ADMIN') && <NavItem to="/atenciones" icon={FileText} label="Atenciones" />}
+              {(user.rol !== 'ADMIN') && <NavItem to="/solicitantes" icon={Users} label="Solicitantes" />}
+              {(user.rol === 'SUPER_SA'|| user.rol === 'SUPER_SO'  || user.rol === 'ADMIN') && <NavItem to="/reporteos" icon={X} label="Reportes" />}
+              {(user.rol === 'SUPER_SA'|| user.rol === 'SUPER_SO'  || user.rol === 'ADMIN') && <NavItem to="/planillas" icon={X} label="Planillas" />}
+              {(user.rol === 'ADMIN') && <NavItem to="/usuarios" icon={ShieldAlert} label="Usuarios" />}
             </nav>
 
             <div className="hidden md:flex items-center gap-4 pl-4 border-l border-blue-800 flex-shrink-0">
                <div className="text-right hidden lg:block">
                  <p className="text-xs font-bold text-white uppercase tracking-tight">{user.nombre} {user.apellido}</p>
-                 <p className="text-[10px] text-blue-400 font-black uppercase tracking-widest">{user.rol}</p>
+                 <p className="text-[10px] text-blue-400 font-black uppercase tracking-widest">{UserRole[user.rol]}</p>
                </div>
                <button onClick={logout} className="p-2.5 bg-blue-800 text-blue-200 hover:text-white hover:bg-red-600 rounded-xl transition-all shadow-lg group">
                  <LogOut className="w-5 h-5 group-hover:scale-110" />
@@ -73,19 +73,20 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
 
         {/* Mobile Nav */}
-        <div className={`md:hidden bg-blue-900 overflow-hidden transition-all duration-300 border-t border-blue-800 ${isMobileMenuOpen ? 'max-h-[32rem]' : 'max-h-0'}`}>
-          <div className="p-4 space-y-2">
+          <div className={`md:hidden bg-blue-900 overflow-hidden transition-all duration-300 border-t border-blue-800 ${isMobileMenuOpen ? 'max-h-[32rem]' : 'max-h-0'}`}>
+            <div className="p-4 space-y-2">
               <NavItem to="/" icon={LayoutDashboard} label="Panel Principal" />
-              {(user.rol !== UserRole.ADMIN) && <NavItem to="/nueva-atencion" icon={PlusCircle} label="Nueva Atención" />}
-              <NavItem to="/atenciones" icon={FileText} label="Atenciones" />
-              <NavItem to="/solicitantes" icon={Users} label="Solicitantes" />
-              {(user.rol === UserRole.SUPERVISOR || user.rol === UserRole.ADMIN) && <NavItem to="/reporteos" icon={ShieldAlert} label="Reportes" />}
-              {(user.rol === UserRole.ADMIN) && <NavItem to="/usuarios" icon={ShieldAlert} label="Usuarios" />}
+              {(user.rol !== 'ADMIN') && <NavItem to="/nueva-atencion" icon={PlusCircle} label="Nueva Atención" />}
+              {(user.rol !== 'ADMIN') && <NavItem to="/atenciones" icon={FileText} label="Atenciones" />}
+              {(user.rol !== 'ADMIN') && <NavItem to="/solicitantes" icon={Users} label="Solicitantes" />}
+              {(user.rol === 'SUPER_SA'|| user.rol === 'SUPER_SO' || user.rol === 'ADMIN') && <NavItem to="/reporteos" icon={ShieldAlert} label="Reportes" />}
+              {(user.rol === 'SUPER_SA'|| user.rol === 'SUPER_SO' || user.rol === 'ADMIN') && <NavItem to="/planillas" icon={FileText} label="Planillas" />}
+              {(user.rol === 'ADMIN') && <NavItem to="/usuarios" icon={ShieldAlert} label="Usuarios" />}
               <button onClick={logout} className="w-full flex items-center gap-2 px-4 py-3 bg-red-600/20 text-red-200 rounded-xl font-bold uppercase tracking-wider text-xs mt-4">
                 <LogOut className="w-4 h-4" /> Cerrar Sesión
               </button>
+            </div>
           </div>
-        </div>
       </header>
       <main className="flex-1 w-full max-w-7xl mx-auto p-4 md:p-8">{children}</main>
     </div>

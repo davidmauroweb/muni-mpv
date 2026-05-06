@@ -26,7 +26,7 @@ const AppContent = () => {
     <Layout>
       <Routes>
         <Route path="/" element={<Dashboard />} />
-        {(user.rol !== UserRole.ADMIN) && (
+        {(user.rol !== 'ADMIN') && (
           <Route path="/nueva-atencion" element={<NewAttention />} />
         )}
         
@@ -34,15 +34,15 @@ const AppContent = () => {
         <Route path="/solicitantes" element={<Applicants />} />
         
         {/* Protected Users/Staff Route */}
-        {(user.rol === UserRole.ADMIN) && (
+        {(user.rol === 'ADMIN') && (
           <Route path="/usuarios" element={<Users />} />
         )}
 
-        {(user.rol === UserRole.ADMIN || user.rol === UserRole.SUPERVISOR) && (
+        {(user.rol === 'ADMIN' || user.rol === 'SUPER_SA' || user.rol === 'SUPER_SO') && (
             <Route path="/reporteos" element={<Reportes />} />
         )}
 
-        {(user.rol === UserRole.ADMIN || user.rol === UserRole.SUPERVISOR) && (
+        {(user.rol === 'ADMIN' || user.rol === 'SUPER_SA' || user.rol === 'SUPER_SO') && (
             <Route path="/planillas" element={<Planillas />} />
         )}
 

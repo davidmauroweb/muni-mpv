@@ -39,7 +39,6 @@ export const Users: React.FC = () => {
       debe_cambiar_password: !editingId,
       created_at: editingId ? (users.find(u => u.id === editingId)?.created_at || new Date().toISOString()) : new Date().toISOString()
     };
-
     const savedUser = await fakeUserService.saveUser(user);
 
     const updatedUsers = await fakeUserService.getUsers();
@@ -98,7 +97,7 @@ export const Users: React.FC = () => {
                                 </td>
                                 <td className="p-6">
                                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-blue-50 text-blue-700 text-[10px] font-black uppercase tracking-widest border border-blue-100">
-                                        <Shield className="w-3 h-3" /> {u.rol}
+                                        <Shield className="w-3 h-3" /> {UserRole[u.rol]}
                                     </span>
                                 </td>
                                 <td className="p-6 text-sm font-medium text-slate-600">{UserArea[u.area as keyof typeof UserArea] || "Sin área"}</td>
@@ -147,7 +146,7 @@ export const Users: React.FC = () => {
                         <div className="col-span-1">
                             <label className="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-wider">Rol</label>
                             <select className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" value={formData.rol} onChange={e => setFormData({...formData, rol: e.target.value as UserRole})}>
-                                {Object.values(UserRole).map(r => <option key={r} value={r}>{r}</option>)}
+                                {Object.entries(UserRole).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
                             </select>
                         </div>
                         <div className="col-span-1">

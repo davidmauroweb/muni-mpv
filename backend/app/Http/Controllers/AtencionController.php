@@ -14,12 +14,17 @@ class AtencionController extends Controller
      */
     public function index()
     {
-        return atencion::whereDate('fecha', Carbon::today())
+        $rol = auth()->user()->rol;
+        $q = atencion::whereDate('fecha', Carbon::today())
             ->join('solicitantes', 'solicitantes.id', '=', 'atencions.solicitante_id')
             ->leftjoin('users', 'atencions.usuario_asignado_id', '=', 'users.id')
-            ->select('solicitantes.nombre_apellido AS solicitante_nombre','solicitantes.dni AS solicitante_dni','atencions.*','users.apellido AS personal_nombre', 'users.area AS personal_cargo','solicitantes.domicilio AS solicitante_domicilio','solicitantes.telefono AS solicitante_telefono')
-            ->orderBy('solicitantes.updated_at')
-            ->get();
+            ->select('solicitantes.nombre_apellido AS solicitante_nombre','solicitantes.dni AS solicitante_dni','atencions.*','users.apellido AS personal_nombre', 'users.area AS personal_cargo','solicitantes.domicilio AS solicitante_domicilio','solicitantes.telefono AS solicitante_telefono');
+            if ($rol == 'SUPER_SO') {
+                    $q->where('users.area', '<', 5);
+                } elseif ($rol == 'SUPER_SA') {
+                    $q->where('users.area', '>', 4);
+                }
+        return $q->orderBy('solicitantes.updated_at')->get();
     }
 
     /**
@@ -35,10 +40,11 @@ class AtencionController extends Controller
      */
     public function store(Request $request)
     {
+        $u_asignado = auth()->user()->id;
         try {
         $nuevo = new atencion();
         $nuevo->solicitante_id = $request->solicitante_id;
-        $nuevo->usuario_creador_id = auth()->user()->id;
+        $nuevo->usuario_creador_id = $u_asignado;
         $nuevo->usuario_asignado_id = $request->usuario_asignado_id;
         $nuevo->estado = $request->filled('usuario_asignado_id') ? 'en_atencion' : 'registrado';
         $nuevo->fecha = Carbon::now()->format('Y-m-d');
@@ -84,7 +90,7 @@ class AtencionController extends Controller
 
     } catch (\Exception $e) {
         Log::info('INTENTO FALLIDO - AtencionController@store', [
-            'usuario_id' => auth()->user()->id,
+            'usuario_id' => $u_asignado,
             'request' => $request->all(),
             'error' => $e->getMessage(),
             'timestamp' => Carbon::now()->toDateTimeString()
@@ -117,7 +123,8 @@ class AtencionController extends Controller
 
         public function reporteus(Request $request)
     {
-            $datos=atencion::whereDate('fecha', $request->desde)->where('usuario_asignado_id', auth()->user()->id)
+        $u_asignado = auth()->user()->id;
+            $datos=atencion::whereDate('fecha', $request->desde)->where('usuario_asignado_id', $u_asignado)
             ->join('solicitantes', 'solicitantes.id', '=', 'atencions.solicitante_id')
             ->leftjoin('users', 'atencions.usuario_asignado_id', '=', 'users.id')
             ->select('solicitantes.nombre_apellido AS solicitante_nombre','solicitantes.dni AS solicitante_dni','atencions.*','users.apellido AS personal_nombre', 'users.area AS personal_cargo','solicitantes.domicilio AS solicitante_domicilio','solicitantes.telefono AS solicitante_telefono')
@@ -149,13 +156,13 @@ class AtencionController extends Controller
         $update->estado = $request->estado;
         $update->os = $request->os;
         $update->resolucion = $request->atencion_dispensada;
-        if ($usrol == 'SUPERVISOR' || $usrol == 'MESA_ENTRADAS' || $usid == $update->usuario_asignado_id){
+        if ($usrol == 'SUPER_SO' || $usrol == 'SUPER_SA' || $usrol == 'MESA_ENTRADAS' || $usid == $update->usuario_asignado_id){
             $update->save();
             $ss = true;
             $msj = 'Atención Dispensada';
         }else{
             $ss = false;
-            $msj = 'Atención Dispensada';
+            $msj = 'Atención NO Dispensada';
         }
         
         // La fecha se calcula automáticamente con laravel al modificar un campo modifica el campo updated_at
